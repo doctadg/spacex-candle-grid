@@ -3,1180 +3,1073 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SPCX Launch Grid — Candle Close Prediction Arena</title>
-  <meta name="description" content="A high-fidelity prototype for a points-only SPCX opening candle close prediction game." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23050a12'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%2341e9ff' stroke-width='4'/%3E%3Cpath d='M9 39c16-10 31-17 46-23' stroke='%23ffb24a' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <title>SPCX Launch Grid — Candle Close Arena</title>
+  <meta name="description" content="Premium prototype for a points-only SPCX candle-close prediction arena." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307080a'/%3E%3Cpath d='M13 42h38M13 32h38M13 22h38' stroke='%237c5cff' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M22 48 44 16' stroke='%23f5f7fb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <style>
     :root {
-      --bg: #03050a;
-      --bg-2: #07101c;
-      --panel: rgba(10, 18, 31, .72);
-      --panel-2: rgba(13, 28, 45, .86);
-      --line: rgba(167, 225, 255, .14);
-      --line-strong: rgba(167, 225, 255, .28);
-      --ink: #eef8ff;
-      --muted: #8aa2b7;
-      --soft: #536779;
-      --cyan: #41e9ff;
-      --cyan-2: #89fbff;
-      --blue: #447bff;
-      --violet: #8a5cff;
-      --amber: #ffb24a;
-      --red: #ff4d6d;
-      --green: #62ffc6;
-      --shadow: 0 24px 80px rgba(0, 0, 0, .48);
-      --radius-xl: 34px;
-      --radius-lg: 24px;
-      --radius-md: 16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+      --bg: #050609;
+      --bg-2: #08090d;
+      --panel: #0d0f13;
+      --panel-2: #11141a;
+      --panel-3: #171a22;
+      --surface: rgba(255,255,255,.035);
+      --surface-2: rgba(255,255,255,.055);
+      --line: rgba(255,255,255,.075);
+      --line-2: rgba(255,255,255,.12);
+      --text: #f4f6fb;
+      --text-2: #c9ceda;
+      --muted: #818895;
+      --faint: #555c68;
+      --accent: #7c5cff;
+      --accent-2: #9f8cff;
+      --accent-3: #d8d1ff;
+      --green: #1fd99d;
+      --red: #ff5a74;
+      --amber: #f0b45f;
+      --blue: #57a2ff;
+      --radius: 14px;
+      --radius-lg: 18px;
+      --shadow: 0 18px 80px rgba(0,0,0,.42);
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --grid-left: 56%;
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
-
     body {
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 78% 4%, rgba(65, 233, 255, .24), transparent 28vw),
-        radial-gradient(circle at 15% 18%, rgba(138, 92, 255, .18), transparent 22vw),
-        radial-gradient(circle at 52% 108%, rgba(255, 178, 74, .12), transparent 30vw),
-        linear-gradient(135deg, #020408 0%, #061020 54%, #020308 100%);
-      color: var(--ink);
+        radial-gradient(circle at 72% -18%, rgba(124,92,255,.14), transparent 36vw),
+        radial-gradient(circle at 4% 96%, rgba(87,162,255,.08), transparent 34vw),
+        linear-gradient(180deg, #050609 0%, #07080b 48%, #040507 100%);
+      color: var(--text);
       font-family: var(--sans);
+      font-feature-settings: "cv01", "ss03";
       overflow-x: hidden;
     }
 
-    body::before,
-    body::after {
+    body::before {
       content: "";
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      z-index: -2;
-    }
-
-    body::before {
-      opacity: .55;
-      background-image:
-        radial-gradient(circle at 11% 24%, rgba(255,255,255,.58) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 41% 14%, rgba(255,255,255,.45) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 75% 23%, rgba(255,255,255,.46) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 21% 72%, rgba(255,255,255,.32) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 63% 63%, rgba(255,255,255,.42) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 91% 78%, rgba(255,255,255,.36) 0 1px, transparent 1.5px);
-      background-size: 390px 310px, 520px 430px, 460px 340px, 610px 490px, 700px 620px, 420px 520px;
-      animation: star-drift 46s linear infinite;
-    }
-
-    body::after {
       z-index: -1;
+      pointer-events: none;
       background:
-        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-      background-size: 56px 56px;
-      mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+        linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.62), transparent 72%);
     }
-
-    @keyframes star-drift {
-      from { transform: translateY(0); }
-      to { transform: translateY(-160px); }
-    }
-
-    a { color: inherit; }
 
     button, input { font: inherit; }
+    button { border: 0; color: inherit; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
 
-    button {
-      color: inherit;
-      border: 0;
-      cursor: pointer;
-    }
-
-    .shell {
-      width: min(1480px, calc(100vw - 28px));
-      margin: 0 auto;
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: 64px 1fr;
     }
 
     .topbar {
       position: sticky;
       top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(180deg, rgba(3,5,10,.88), rgba(3,5,10,.54));
-      border-bottom: 1px solid rgba(167,225,255,.1);
-    }
-
-    .nav {
-      height: 76px;
-      display: flex;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: 280px 1fr 344px;
       align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      gap: 16px;
+      padding: 0 18px;
+      background: rgba(5,6,9,.78);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 13px;
+      gap: 12px;
       min-width: 0;
     }
 
-    .mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      position: relative;
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
       background:
-        radial-gradient(circle at 48% 48%, #fff 0 2px, transparent 3px),
-        conic-gradient(from 30deg, var(--cyan), var(--blue), var(--violet), var(--amber), var(--cyan));
-      box-shadow: 0 0 34px rgba(65,233,255,.34), inset 0 0 18px rgba(255,255,255,.28);
+        linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.03)),
+        #0d0f13;
+      border: 1px solid var(--line-2);
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    .mark::before {
+    .brand-mark::before,
+    .brand-mark::after {
       content: "";
       position: absolute;
-      inset: 7px;
-      border: 1px solid rgba(3,5,10,.85);
-      border-radius: inherit;
-      background: radial-gradient(circle at 50% 50%, #0a1725 0 42%, transparent 43%);
+      background: var(--text);
+      border-radius: 999px;
+      transform: rotate(-28deg);
     }
 
-    .mark::after {
-      content: "";
-      position: absolute;
-      left: -7px;
-      right: -7px;
-      top: 20px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(137,251,255,.95), transparent);
-      transform: rotate(-19deg);
-      box-shadow: 0 0 12px rgba(65,233,255,.8);
-    }
+    .brand-mark::before { width: 3px; height: 22px; left: 16px; top: 6px; background: var(--accent-2); }
+    .brand-mark::after { width: 22px; height: 2px; left: 6px; top: 16px; opacity: .9; }
 
-    .brand-title {
-      display: grid;
-      gap: 1px;
-    }
-
-    .brand-title strong {
-      letter-spacing: .14em;
+    .brand-copy strong {
+      display: block;
       font-size: 13px;
+      letter-spacing: .12em;
       text-transform: uppercase;
     }
 
-    .brand-title span {
+    .brand-copy span {
+      display: block;
+      margin-top: 2px;
       color: var(--muted);
       font: 11px/1 var(--mono);
-      letter-spacing: .08em;
     }
 
-    .navlinks {
+    .tabs {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #b6cadc;
-      font-size: 13px;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .navlinks a {
-      text-decoration: none;
-      padding: 9px 12px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-    }
-
-    .navlinks a:hover,
-    .navlinks a:focus-visible {
-      outline: none;
-      border-color: rgba(137,251,255,.24);
-      background: rgba(137,251,255,.06);
-    }
-
-    .wallet {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .pill {
-      min-height: 42px;
+    .tab {
+      height: 34px;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 0 16px;
+      padding: 0 12px;
       border-radius: 999px;
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(167,225,255,.16);
-      color: #dbeaf6;
-      box-shadow: inset 0 0 20px rgba(255,255,255,.02);
-      white-space: nowrap;
+      color: var(--muted);
+      border: 1px solid transparent;
+      font-size: 13px;
+      font-weight: 510;
+      transition: color .15s ease, background .15s ease, border-color .15s ease;
     }
 
-    .pill strong { font-weight: 700; }
-
-    .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 0 rgba(98,255,198,.7);
-      animation: pulse 1.6s ease-out infinite;
+    .tab.active,
+    .tab:hover,
+    .tab:focus-visible {
+      outline: 0;
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--line);
     }
 
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(98,255,198,.55); }
-      70% { box-shadow: 0 0 0 10px rgba(98,255,198,0); }
-      100% { box-shadow: 0 0 0 0 rgba(98,255,198,0); }
-    }
-
-    .cta {
-      position: relative;
-      min-height: 44px;
-      padding: 0 18px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--cyan), #66a6ff 55%, var(--violet));
-      color: #02060b;
-      font-weight: 800;
-      box-shadow: 0 12px 32px rgba(65,233,255,.24);
-      overflow: hidden;
-    }
-
-    .cta::after {
-      content: "";
-      position: absolute;
-      inset: -80% auto auto -30%;
-      width: 48%;
-      height: 260%;
-      background: rgba(255,255,255,.45);
-      transform: rotate(28deg);
-      filter: blur(9px);
-      animation: sheen 4s ease-in-out infinite;
-    }
-
-    @keyframes sheen {
-      0%, 55% { left: -45%; opacity: 0; }
-      62% { opacity: .85; }
-      78%, 100% { left: 115%; opacity: 0; }
-    }
-
-    .hero {
-      padding: 72px 0 36px;
+    .status-strip {
       display: grid;
-      grid-template-columns: minmax(0, .86fr) minmax(430px, .64fr);
-      gap: 32px;
-      align-items: stretch;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
     }
 
-    .headline {
-      min-height: 560px;
-      position: relative;
-      border-radius: var(--radius-xl);
-      padding: clamp(28px, 4vw, 58px);
-      overflow: hidden;
+    .status-pill {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text-2);
+      font: 11px var(--mono);
+    }
+
+    .status-pill span { color: var(--muted); white-space: nowrap; }
+    .status-pill strong { color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(31,217,157,.12);
+      flex: 0 0 auto;
+    }
+
+    .workspace {
+      width: min(1720px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 18px 0 28px;
+      display: grid;
+      grid-template-columns: 252px minmax(0, 1fr) 338px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .rail,
+    .ticket,
+    .module,
+    .chart-card {
+      border: 1px solid var(--line);
       background:
-        linear-gradient(135deg, rgba(255,255,255,.09), rgba(255,255,255,.035)),
-        radial-gradient(circle at 78% 25%, rgba(65,233,255,.20), transparent 28%),
-        radial-gradient(circle at 35% 74%, rgba(255,178,74,.11), transparent 28%),
-        rgba(5, 10, 18, .68);
-      border: 1px solid rgba(167,225,255,.15);
-      box-shadow: var(--shadow);
+        linear-gradient(180deg, rgba(255,255,255,.042), rgba(255,255,255,.018)),
+        var(--panel);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045);
     }
 
-    .headline::before {
-      content: "";
-      position: absolute;
-      width: 620px;
-      height: 620px;
-      right: -150px;
-      top: -140px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, transparent 0 49%, rgba(137,251,255,.33) 49.4% 50%, transparent 50.5% 59%, rgba(255,255,255,.08) 59.4% 60%, transparent 60.5%),
-        conic-gradient(from 90deg, rgba(65,233,255,.0), rgba(65,233,255,.28), rgba(138,92,255,.08), rgba(255,178,74,.24), rgba(65,233,255,.0));
-      opacity: .82;
-      filter: blur(.2px);
-      animation: slow-spin 26s linear infinite;
+    .rail {
+      position: sticky;
+      top: 82px;
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      display: grid;
+      gap: 12px;
     }
 
-    .headline::after {
-      content: "";
-      position: absolute;
-      inset: auto -80px -140px auto;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 45% 45%, rgba(255,255,255,.9) 0 2px, rgba(65,233,255,.4) 3px, transparent 4px), radial-gradient(circle, rgba(65,233,255,.08), transparent 62%);
-      border: 1px solid rgba(137,251,255,.18);
+    .rail-section {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.022);
+      border: 1px solid rgba(255,255,255,.055);
     }
-
-    @keyframes slow-spin { to { transform: rotate(360deg); } }
 
     .eyebrow {
-      position: relative;
-      z-index: 1;
-      display: inline-flex;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(3,5,10,.54);
-      border: 1px solid rgba(137,251,255,.2);
-      color: #bcecff;
-      font: 12px/1 var(--mono);
-      letter-spacing: .08em;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--faint);
+      font: 10px var(--mono);
+      letter-spacing: .12em;
       text-transform: uppercase;
     }
 
-    .hero h1 {
-      position: relative;
-      z-index: 1;
-      margin: 26px 0 18px;
-      max-width: 890px;
-      font-size: clamp(48px, 7vw, 118px);
-      line-height: .87;
-      letter-spacing: -.085em;
-      text-wrap: balance;
-    }
+    .room-list { display: grid; gap: 6px; }
 
-    .hero h1 .orbital {
-      display: block;
-      color: transparent;
-      background: linear-gradient(90deg, #fff, #8dfcff 44%, #7a8dff 72%, #ffca7a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      text-shadow: 0 0 52px rgba(65,233,255,.18);
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 1;
-      max-width: 760px;
-      color: #b9cede;
-      font-size: clamp(17px, 2vw, 22px);
-      line-height: 1.55;
-      text-wrap: pretty;
-    }
-
-    .hero-actions {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-wrap: wrap;
+    .room {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
       align-items: center;
-      gap: 12px;
-      margin-top: 34px;
+      gap: 10px;
+      width: 100%;
+      padding: 8px;
+      border-radius: 12px;
+      background: transparent;
+      text-align: left;
+      border: 1px solid transparent;
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
     }
 
-    .ghost {
-      min-height: 48px;
-      padding: 0 18px;
+    .room:hover,
+    .room.active,
+    .room:focus-visible {
+      outline: 0;
+      background: rgba(255,255,255,.044);
+      border-color: rgba(255,255,255,.08);
+    }
+
+    .room.active { box-shadow: inset 0 0 0 1px rgba(124,92,255,.26); }
+
+    .room-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(124,92,255,.11);
+      border: 1px solid rgba(124,92,255,.22);
+      color: var(--accent-3);
+      font: 700 12px var(--mono);
+    }
+
+    .room b { display: block; font-size: 13px; }
+    .room small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .room .count { color: var(--muted); font: 11px var(--mono); }
+
+    .round-card {
+      display: grid;
+      gap: 11px;
+    }
+
+    .round-number {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+    }
+
+    .round-number strong {
+      font-size: 42px;
+      letter-spacing: -.055em;
+      line-height: .9;
+      font-weight: 620;
+    }
+
+    .round-number span {
+      color: var(--muted);
+      font: 11px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .progress-track {
+      height: 8px;
       border-radius: 999px;
-      background: rgba(255,255,255,.045);
-      border: 1px solid rgba(167,225,255,.16);
-      color: #d9e8f5;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
     }
 
-    .ghost:hover,
-    .ghost:focus-visible {
-      outline: none;
-      border-color: rgba(137,251,255,.42);
-      background: rgba(137,251,255,.08);
+    .progress-bar {
+      height: 100%;
+      width: 100%;
+      transform-origin: left;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: inherit;
     }
 
-    .facts {
+    .rail-note {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 12px;
+    }
+
+    .main {
+      min-width: 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero-strip {
+      min-height: 154px;
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.065), rgba(255,255,255,.012)),
+        radial-gradient(circle at 84% 32%, rgba(124,92,255,.17), transparent 34%),
+        #0b0d12;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .hero-strip::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 0 62%, rgba(255,255,255,.035) 62.2%, transparent 62.45%, transparent 70%, rgba(255,255,255,.024) 70.2%, transparent 70.45%);
+      pointer-events: none;
+    }
+
+    .hero-content {
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 48px;
-      max-width: 840px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: end;
     }
 
-    .fact {
-      min-height: 104px;
-      border-radius: 18px;
-      padding: 15px;
-      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028));
-      border: 1px solid rgba(167,225,255,.13);
-    }
-
-    .fact span {
-      display: block;
-      color: var(--soft);
+    .hero-kicker {
+      color: var(--muted);
       font: 11px var(--mono);
-      letter-spacing: .08em;
+      letter-spacing: .13em;
       text-transform: uppercase;
       margin-bottom: 12px;
     }
 
-    .fact strong {
+    .hero-title {
+      margin: 0;
+      max-width: 780px;
+      font-size: clamp(34px, 5vw, 78px);
+      line-height: .92;
+      letter-spacing: -.07em;
+      font-weight: 620;
+      text-wrap: balance;
+    }
+
+    .hero-copy {
+      margin: 14px 0 0;
+      max-width: 700px;
+      color: var(--text-2);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 112px);
+      gap: 8px;
+    }
+
+    .metric {
+      padding: 12px;
+      border-radius: 13px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .metric span {
       display: block;
-      font-size: clamp(20px, 2.4vw, 34px);
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 20px;
       letter-spacing: -.04em;
     }
 
-    .fact small {
-      display: block;
-      color: var(--muted);
-      margin-top: 5px;
-      font-size: 12px;
-    }
-
-    .launch-card {
-      position: relative;
-      min-height: 560px;
-      border-radius: var(--radius-xl);
-      padding: 22px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(65,233,255,.13), transparent 31%),
-        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.025)),
-        rgba(4, 9, 16, .74);
-      border: 1px solid rgba(167,225,255,.16);
-      box-shadow: var(--shadow);
-    }
-
-    .launch-card::before {
-      content: "";
-      position: absolute;
-      inset: 12px;
-      border: 1px solid rgba(137,251,255,.08);
-      border-radius: 28px;
-      pointer-events: none;
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 22px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .label {
-      color: var(--muted);
-      font: 11px var(--mono);
-      text-transform: uppercase;
-      letter-spacing: .12em;
-    }
-
-    .value-xl {
-      margin-top: 8px;
-      font-size: 48px;
-      letter-spacing: -.055em;
-      line-height: .9;
-      font-weight: 820;
-    }
-
-    .mini-chart {
-      height: 360px;
-      border-radius: 26px;
-      overflow: hidden;
-      position: relative;
-      background: #040a11;
-      border: 1px solid rgba(167,225,255,.13);
-    }
-
-    .mini-chart canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .mini-grid {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(rgba(137,251,255,.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(137,251,255,.08) 1px, transparent 1px);
-      background-size: 100% 12.5%, 16.66% 100%;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    .live-badge {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(2, 8, 13, .68);
-      border: 1px solid rgba(98,255,198,.2);
-      font: 11px var(--mono);
-      color: #dfffee;
-    }
-
-    .tape {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .tape div {
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,255,255,.045);
-      border: 1px solid rgba(167,225,255,.11);
-    }
-
-    .tape span {
-      display: block;
-      color: var(--soft);
-      font: 11px var(--mono);
-      margin-bottom: 7px;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .tape strong { font-size: 18px; }
-
-    .section-title {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 18px;
-      margin: 70px 0 22px;
-    }
-
-    .section-title h2 {
-      margin: 0;
-      font-size: clamp(32px, 4.6vw, 72px);
-      letter-spacing: -.065em;
-      line-height: .92;
-      max-width: 920px;
-    }
-
-    .section-title p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 460px;
-      line-height: 1.55;
-    }
-
-    .arena {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 18px;
-      min-height: 760px;
-    }
-
-    .terminal-panel,
-    .side-panel,
-    .system-panel {
-      border-radius: var(--radius-xl);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.026)),
-        rgba(5, 10, 18, .76);
-      border: 1px solid rgba(167,225,255,.14);
-      box-shadow: var(--shadow);
-    }
-
-    .terminal-panel {
+    .chart-card {
+      border-radius: var(--radius-lg);
+      min-height: 668px;
       overflow: hidden;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
     }
 
-    .terminal-head {
-      padding: 18px 20px;
-      border-bottom: 1px solid rgba(167,225,255,.12);
+    .chart-toolbar {
+      min-height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      background: rgba(3,5,10,.38);
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
     }
 
     .instrument {
       display: flex;
       align-items: center;
-      gap: 13px;
+      gap: 12px;
       min-width: 0;
     }
 
-    .ticker-orb {
-      width: 52px;
-      height: 52px;
-      border-radius: 18px;
+    .ticker {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, rgba(65,233,255,.16), rgba(138,92,255,.13));
-      border: 1px solid rgba(137,251,255,.18);
-      color: var(--cyan-2);
-      font: 800 16px var(--mono);
-      box-shadow: inset 0 0 24px rgba(65,233,255,.08);
+      border: 1px solid rgba(124,92,255,.28);
+      background: rgba(124,92,255,.11);
+      color: var(--accent-3);
+      font: 700 13px var(--mono);
     }
 
-    .instrument h3 {
+    .instrument h2 {
       margin: 0;
-      font-size: 21px;
+      font-size: 17px;
+      font-weight: 590;
       letter-spacing: -.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .instrument p {
       margin: 4px 0 0;
       color: var(--muted);
-      font-size: 13px;
+      font-size: 12px;
     }
 
-    .clock {
-      display: grid;
-      grid-template-columns: auto auto;
+    .price-cluster {
+      display: flex;
       align-items: center;
-      gap: 11px;
-      padding: 10px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,178,74,.22);
-      background: rgba(255,178,74,.08);
-      min-width: 180px;
+      gap: 14px;
     }
 
-    .clock-ring {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: conic-gradient(var(--amber) var(--timer-angle), rgba(255,255,255,.12) 0);
-      position: relative;
-      box-shadow: 0 0 24px rgba(255,178,74,.16);
+    .last-price {
+      text-align: right;
     }
 
-    .clock-ring::after {
-      content: "";
-      position: absolute;
-      inset: 5px;
-      border-radius: inherit;
-      background: #08101a;
-    }
-
-    .clock .time {
-      font: 800 24px/1 var(--mono);
-      color: #ffe4bf;
-    }
-
-    .clock .sub {
+    .last-price strong {
       display: block;
-      color: #c3996b;
-      font: 10px var(--mono);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-top: 3px;
+      font: 600 30px/1 var(--mono);
+      letter-spacing: -.07em;
     }
 
-    .chart-wrap {
+    .last-price span {
+      display: block;
+      margin-top: 4px;
+      color: var(--green);
+      font: 12px var(--mono);
+    }
+
+    .timer-box {
+      min-width: 126px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.038);
+      border: 1px solid var(--line);
+    }
+
+    .timer-box span {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font: 10px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    .timer-box strong {
+      display: block;
+      margin-top: 6px;
+      font: 600 24px/1 var(--mono);
+      color: var(--text);
+    }
+
+    .arena {
       position: relative;
-      min-height: 560px;
-      background: #02060a;
+      min-height: 514px;
+      background: #05070a;
       overflow: hidden;
     }
 
-    #mainChart {
+    .arena canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
     }
 
-    .chart-scanline {
+    .grid-zone {
       position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: .44;
-      background: linear-gradient(180deg, transparent, rgba(137,251,255,.04), transparent);
-      height: 180px;
-      animation: scan 5.5s ease-in-out infinite;
-    }
-
-    @keyframes scan {
-      0%, 100% { transform: translateY(-180px); }
-      50% { transform: translateY(620px); }
-    }
-
-    .prediction-grid {
-      --rows: 9;
-      --cols: 6;
-      position: absolute;
-      top: 42px;
-      right: 46px;
-      bottom: 48px;
-      width: min(42%, 430px);
+      z-index: 4;
+      top: 54px;
+      right: 28px;
+      bottom: 46px;
+      width: 40%;
       display: grid;
-      grid-template-columns: repeat(var(--cols), 1fr);
-      grid-template-rows: repeat(var(--rows), 1fr);
-      border: 1px solid rgba(137,251,255,.38);
-      box-shadow: 0 0 42px rgba(65,233,255,.12), inset 0 0 32px rgba(65,233,255,.07);
-      background: rgba(3,10,18,.24);
-      backdrop-filter: blur(2px);
-      z-index: 3;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(9,11,16,.38);
+      box-shadow: 0 0 0 1px rgba(124,92,255,.08), inset 0 0 0 1px rgba(255,255,255,.03);
     }
 
-    .prediction-grid::before {
-      content: "NEXT CANDLE CLOSE GRID";
+    .grid-zone::before {
+      content: "NEXT CANDLE CLOSE";
       position: absolute;
-      top: -32px;
+      top: -27px;
       left: 0;
-      color: #99f6ff;
-      font: 700 11px var(--mono);
+      color: var(--muted);
+      font: 10px var(--mono);
       letter-spacing: .14em;
-      text-shadow: 0 0 16px rgba(65,233,255,.55);
     }
 
-    .prediction-grid::after {
-      content: "LOCKS AT 00:05";
+    .grid-zone::after {
+      content: "LOCKS T-05";
       position: absolute;
-      bottom: -31px;
       right: 0;
-      color: #ffd29a;
-      font: 700 11px var(--mono);
-      letter-spacing: .12em;
+      bottom: -27px;
+      color: var(--amber);
+      font: 10px var(--mono);
+      letter-spacing: .14em;
     }
 
     .cell {
       position: relative;
+      min-width: 0;
+      min-height: 38px;
       display: grid;
       place-items: center;
-      background: rgba(8,18,29,.18);
-      border-right: 1px solid rgba(137,251,255,.13);
-      border-bottom: 1px solid rgba(137,251,255,.13);
-      min-width: 0;
-      color: rgba(238,248,255,.68);
+      background: linear-gradient(180deg, rgba(255,255,255,var(--heat,.026)), rgba(255,255,255,.012));
+      border-right: 1px solid rgba(255,255,255,.075);
+      border-bottom: 1px solid rgba(255,255,255,.075);
+      color: rgba(244,246,251,.48);
       font: 10px var(--mono);
-      transition: background .16s ease, box-shadow .16s ease, transform .16s ease, border-color .16s ease;
+      transition: background .14s ease, color .14s ease, box-shadow .14s ease, transform .14s ease, border-color .14s ease;
     }
 
-    .cell:nth-child(6n) { border-right: 0; }
-    .cell:nth-last-child(-n+6) { border-bottom: 0; }
+    .cell:nth-child(5n) { border-right: 0; }
+    .cell:nth-last-child(-n+5) { border-bottom: 0; }
 
     .cell:hover,
     .cell:focus-visible {
-      outline: none;
-      background: rgba(65,233,255,.12);
-      box-shadow: inset 0 0 0 1px rgba(137,251,255,.62), 0 0 26px rgba(65,233,255,.17);
+      outline: 0;
       z-index: 2;
-      transform: scale(1.015);
+      color: var(--text);
+      background: rgba(124,92,255,.14);
+      border-color: rgba(124,92,255,.36);
+      box-shadow: inset 0 0 0 1px rgba(159,140,255,.68), 0 0 0 1px rgba(124,92,255,.2);
+      transform: scale(1.01);
     }
 
     .cell.selected {
-      background: rgba(255,178,74,.18);
-      box-shadow: inset 0 0 0 1px rgba(255,213,154,.82), 0 0 30px rgba(255,178,74,.24);
-      color: #fff1d9;
+      color: var(--text);
+      background: rgba(124,92,255,.23);
+      box-shadow: inset 0 0 0 1px rgba(216,209,255,.86), 0 0 26px rgba(124,92,255,.18);
     }
+
+    .cell.locked:not(.selected):not(.winner) { color: rgba(244,246,251,.25); }
 
     .cell.winner {
-      background: rgba(98,255,198,.2);
-      box-shadow: inset 0 0 0 1px rgba(98,255,198,.9), 0 0 34px rgba(98,255,198,.34);
-      color: #eafff8;
-      animation: winner-pop .8s ease both;
+      color: #06100c;
+      background: var(--green);
+      box-shadow: 0 0 0 1px rgba(31,217,157,.85), 0 0 36px rgba(31,217,157,.24);
+      animation: winner .7s cubic-bezier(.2, .9, .1, 1) both;
     }
 
-    .cell.locked:not(.selected):not(.winner) { opacity: .58; }
-
-    @keyframes winner-pop {
-      0% { transform: scale(.94); filter: brightness(.9); }
-      46% { transform: scale(1.08); filter: brightness(1.5); }
+    @keyframes winner {
+      0% { transform: scale(.96); filter: brightness(.88); }
+      45% { transform: scale(1.045); filter: brightness(1.2); }
       100% { transform: scale(1); filter: brightness(1); }
     }
 
-    .cell .chip {
+    .occupant {
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      border: 1px solid rgba(255,255,255,.55);
-      background: var(--chip-color, var(--cyan));
-      box-shadow: 0 0 12px var(--chip-color, var(--cyan));
-      transform: translate(var(--dx, 0), var(--dy, 0));
+      right: var(--x, 8px);
+      top: var(--y, 8px);
+      background: var(--c, var(--accent-2));
+      box-shadow: 0 0 10px var(--c, var(--accent-2));
+      opacity: .86;
     }
 
     .price-rail {
       position: absolute;
-      top: 42px;
-      right: calc(min(42%, 430px) + 54px);
-      bottom: 48px;
-      width: 76px;
+      z-index: 5;
+      top: 54px;
+      right: calc(40% + 36px);
+      bottom: 46px;
+      width: 118px;
       display: grid;
-      grid-template-rows: repeat(9, 1fr);
-      z-index: 4;
+      grid-template-rows: repeat(8, 1fr);
       pointer-events: none;
     }
 
-    .price-band-label {
-      color: rgba(219,234,246,.62);
-      font: 10px var(--mono);
+    .band-label {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       padding-right: 10px;
-      text-shadow: 0 0 10px #02060a;
+      color: rgba(201,206,218,.62);
+      font: 10px var(--mono);
+      text-shadow: 0 0 12px #05070a;
     }
+
+    .settlement-line {
+      position: absolute;
+      z-index: 6;
+      left: 0;
+      right: 0;
+      height: 1px;
+      top: 50%;
+      background: linear-gradient(90deg, transparent, rgba(31,217,157,.9), transparent);
+      opacity: 0;
+      transform: translateY(-50%);
+      box-shadow: 0 0 24px rgba(31,217,157,.4);
+      pointer-events: none;
+    }
+
+    .settlement-line.show { opacity: 1; }
+
+    .settlement {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5,7,10,.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .settlement.show { display: flex; }
+
+    .settlement-card {
+      width: min(460px, calc(100% - 28px));
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)), #0d0f13;
+      box-shadow: var(--shadow);
+      animation: settleIn .35s cubic-bezier(.2,.9,.1,1) both;
+    }
+
+    @keyframes settleIn {
+      from { opacity: 0; transform: translateY(18px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .settlement-card .mini { color: var(--muted); font: 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+    .settlement-card h3 { margin: 10px 0 8px; font-size: clamp(36px, 6vw, 62px); line-height: .9; letter-spacing: -.07em; font-weight: 620; }
+    .settlement-card p { margin: 0 auto 18px; max-width: 360px; color: var(--text-2); line-height: 1.55; }
 
     .chart-footer {
-      padding: 14px 18px 18px;
+      min-height: 78px;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      border-top: 1px solid rgba(167,225,255,.1);
-      background: rgba(3,5,10,.46);
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1px;
+      border-top: 1px solid var(--line);
+      background: rgba(0,0,0,.3);
     }
 
-    .micro {
-      border-radius: 16px;
-      padding: 13px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(167,225,255,.1);
+    .stat {
+      padding: 14px 16px;
+      background: rgba(255,255,255,.018);
       min-width: 0;
     }
 
-    .micro span {
-      color: var(--soft);
+    .stat span {
+      display: block;
+      color: var(--faint);
       font: 10px var(--mono);
       letter-spacing: .08em;
       text-transform: uppercase;
-      display: block;
       margin-bottom: 8px;
     }
 
-    .micro strong {
+    .stat strong {
       display: block;
-      font-size: 18px;
-      white-space: nowrap;
+      font-size: 17px;
+      letter-spacing: -.03em;
       overflow: hidden;
+      white-space: nowrap;
       text-overflow: ellipsis;
     }
 
-    .micro.positive strong { color: var(--green); }
-    .micro.negative strong { color: var(--red); }
+    .positive { color: var(--green) !important; }
+    .negative { color: var(--red) !important; }
 
-    .side-panel {
-      padding: 18px;
+    .bottom-grid {
       display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(280px, .75fr);
       gap: 14px;
-      align-content: start;
     }
+
+    .module {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .module-head {
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .module-head h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 590;
+      letter-spacing: -.01em;
+    }
+
+    .module-head span {
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .round-tape {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .tape-item {
+      padding: 14px;
+      background: #0d0f13;
+      min-height: 92px;
+    }
+
+    .tape-item small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      margin-bottom: 11px;
+    }
+
+    .tape-item strong {
+      display: block;
+      font: 600 18px var(--mono);
+      letter-spacing: -.04em;
+    }
+
+    .tape-item span {
+      display: block;
+      color: var(--faint);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .leader-list { display: grid; }
+
+    .leader {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.052);
+    }
+
+    .leader:last-child { border-bottom: 0; }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      font: 700 11px var(--mono);
+    }
+
+    .leader b { display: block; font-size: 13px; }
+    .leader small { color: var(--muted); font-size: 11px; }
+    .leader strong { font: 600 13px var(--mono); color: var(--accent-3); }
 
     .ticket {
-      position: relative;
+      position: sticky;
+      top: 82px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      border-radius: 26px;
-      padding: 18px;
+    }
+
+    .ticket-top {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ticket-top h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 620;
+      letter-spacing: -.03em;
+    }
+
+    .ticket-top p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .ticket-body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .selection-box {
+      min-height: 126px;
+      border-radius: var(--radius);
+      padding: 14px;
       background:
-        radial-gradient(circle at 80% 20%, rgba(255,178,74,.18), transparent 35%),
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.025));
-      border: 1px solid rgba(255,178,74,.18);
+        linear-gradient(135deg, rgba(124,92,255,.12), rgba(255,255,255,.02)),
+        rgba(255,255,255,.03);
+      border: 1px solid rgba(124,92,255,.22);
     }
 
-    .ticket::before {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      right: -120px;
-      top: -110px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,178,74,.18);
+    .selection-box span,
+    .field label,
+    .feed-item small {
+      display: block;
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
-    .ticket h3,
-    .panel-card h3 {
-      margin: 0 0 14px;
-      font-size: 16px;
-      letter-spacing: -.015em;
+    .selection-box strong {
+      display: block;
+      font-size: 30px;
+      letter-spacing: -.055em;
+      line-height: .95;
+    }
+
+    .selection-box p {
+      margin: 10px 0 0;
+      color: var(--text-2);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .ticket-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 12px 0;
+      gap: 8px;
     }
 
-    .ticket-line {
+    .ticket-metric,
+    .field {
+      border-radius: 13px;
       padding: 12px;
-      border-radius: 16px;
-      background: rgba(3,5,10,.42);
-      border: 1px solid rgba(167,225,255,.1);
+      background: rgba(255,255,255,.027);
+      border: 1px solid rgba(255,255,255,.06);
+      min-width: 0;
     }
 
-    .ticket-line span {
+    .ticket-metric span {
       display: block;
-      color: var(--soft);
+      color: var(--muted);
       font: 10px var(--mono);
       letter-spacing: .08em;
       text-transform: uppercase;
-      margin-bottom: 7px;
+      margin-bottom: 8px;
     }
 
-    .ticket-line strong { font-size: 17px; }
+    .ticket-metric strong { display: block; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    .stake-row {
-      display: grid;
-      grid-template-columns: 1fr 92px;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .stake-row input {
+    .field input {
       width: 100%;
-      min-height: 46px;
-      border-radius: 16px;
-      border: 1px solid rgba(167,225,255,.14);
-      background: rgba(3,5,10,.46);
-      color: #fff;
-      padding: 0 14px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 0 12px;
       outline: none;
+      font: 600 16px var(--mono);
     }
 
-    .stake-row input:focus {
-      border-color: rgba(137,251,255,.5);
-      box-shadow: 0 0 0 4px rgba(65,233,255,.08);
+    .field input:focus {
+      border-color: rgba(124,92,255,.58);
+      box-shadow: 0 0 0 4px rgba(124,92,255,.12);
     }
 
-    .place-btn {
+    .lock-button,
+    .secondary-button {
       width: 100%;
-      min-height: 52px;
-      border-radius: 18px;
-      margin-top: 12px;
-      background: linear-gradient(135deg, #ffe0a8, var(--amber));
-      color: #160c02;
-      font-weight: 850;
-      box-shadow: 0 18px 42px rgba(255,178,74,.22);
+      min-height: 48px;
+      border-radius: 999px;
+      font-weight: 650;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
     }
 
-    .place-btn:disabled {
+    .lock-button {
+      background: var(--text);
+      color: #06070a;
+    }
+
+    .lock-button:not(:disabled):hover,
+    .secondary-button:hover { transform: translateY(-1px); }
+
+    .lock-button:disabled {
+      opacity: .45;
       cursor: not-allowed;
-      opacity: .55;
-      filter: grayscale(.4);
     }
 
-    .panel-card {
-      border-radius: 24px;
-      padding: 16px;
-      background: rgba(255,255,255,.045);
-      border: 1px solid rgba(167,225,255,.11);
+    .secondary-button {
+      background: rgba(255,255,255,.052);
+      border: 1px solid rgba(255,255,255,.09);
+      color: var(--text);
     }
-
-    .leaderboard {
-      display: grid;
-      gap: 9px;
-    }
-
-    .leader {
-      display: grid;
-      grid-template-columns: 32px 1fr auto;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 16px;
-      background: rgba(3,5,10,.36);
-      border: 1px solid rgba(167,225,255,.08);
-    }
-
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      color: #03050a;
-      font: 850 12px var(--mono);
-      background: linear-gradient(135deg, var(--cyan), var(--violet));
-    }
-
-    .leader b { font-size: 13px; display: block; }
-    .leader small { color: var(--muted); }
-    .leader strong { color: var(--cyan-2); font: 800 13px var(--mono); }
 
     .feed {
-      max-height: 176px;
+      max-height: 216px;
       overflow: auto;
       display: grid;
-      gap: 9px;
+      gap: 8px;
       scrollbar-width: none;
     }
 
     .feed::-webkit-scrollbar { display: none; }
 
     .feed-item {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.027);
+      border: 1px solid rgba(255,255,255,.055);
+      color: var(--text-2);
       font-size: 12px;
-      line-height: 1.35;
-      color: #bcd0df;
-      padding: 9px 10px;
-      border-radius: 14px;
-      background: rgba(3,5,10,.32);
-      border: 1px solid rgba(167,225,255,.08);
+      line-height: 1.4;
     }
 
-    .feed-item strong { color: #fff; }
-    .feed-item em { color: var(--amber); font-style: normal; }
+    .feed-item b { color: var(--text); }
+    .feed-item em { color: var(--accent-3); font-style: normal; }
 
-    .settlement {
-      position: absolute;
-      inset: 0;
-      z-index: 8;
-      display: none;
-      place-items: center;
-      background: radial-gradient(circle, rgba(3,5,10,.38), rgba(3,5,10,.82));
-      backdrop-filter: blur(10px);
-    }
-
-    .settlement.show { display: grid; }
-
-    .settle-card {
-      width: min(520px, calc(100% - 28px));
-      border-radius: 32px;
-      padding: 28px;
-      text-align: center;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(98,255,198,.16), transparent 42%),
-        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.045));
-      border: 1px solid rgba(137,251,255,.2);
-      box-shadow: 0 28px 96px rgba(0,0,0,.52);
-      animation: settle-in .45s cubic-bezier(.2,.9,.1,1) both;
-    }
-
-    @keyframes settle-in {
-      from { opacity: 0; transform: translateY(24px) scale(.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .settle-card .big {
-      font-size: clamp(44px, 7vw, 86px);
-      line-height: .88;
-      letter-spacing: -.07em;
-      margin: 10px 0 10px;
-    }
-
-    .settle-card p {
-      color: #b9cede;
-      margin: 0 0 18px;
+    .rules {
+      padding: 12px 14px 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
       line-height: 1.5;
     }
 
-    .system-grid {
-      margin: 22px 0 80px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .system-panel {
-      padding: 24px;
-      min-height: 220px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .system-panel::after {
-      content: "";
-      position: absolute;
-      inset: auto -90px -120px auto;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      border: 1px solid rgba(137,251,255,.12);
-      background: radial-gradient(circle, rgba(65,233,255,.06), transparent 65%);
-    }
-
-    .system-panel .num {
-      color: var(--cyan-2);
-      font: 12px var(--mono);
-      letter-spacing: .16em;
-      text-transform: uppercase;
-    }
-
-    .system-panel h3 {
-      margin: 32px 0 12px;
-      font-size: 25px;
-      letter-spacing: -.035em;
-    }
-
-    .system-panel p {
-      color: #a6bbcd;
-      line-height: 1.55;
-      margin: 0;
-    }
-
-    .legal {
-      margin: 0 0 42px;
-      color: #6f8496;
-      font-size: 12px;
-      line-height: 1.55;
-      text-align: center;
-    }
+    .rules b { color: var(--text-2); }
 
     .toast {
       position: fixed;
+      z-index: 80;
       left: 50%;
-      bottom: 22px;
+      bottom: 20px;
       transform: translate(-50%, 20px);
       opacity: 0;
-      z-index: 40;
-      min-width: min(520px, calc(100vw - 24px));
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(4, 10, 18, .92);
-      border: 1px solid rgba(137,251,255,.24);
-      box-shadow: 0 20px 70px rgba(0,0,0,.42);
-      color: #dfefff;
-      transition: opacity .22s ease, transform .22s ease;
+      width: min(460px, calc(100vw - 24px));
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: rgba(13,15,19,.94);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: var(--shadow);
+      color: var(--text-2);
+      font-size: 13px;
+      transition: opacity .2s ease, transform .2s ease;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .legal {
+      grid-column: 1 / -1;
+      color: var(--faint);
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 4px 12px 0;
     }
 
-    @media (max-width: 1180px) {
-      .hero { grid-template-columns: 1fr; }
-      .headline, .launch-card { min-height: auto; }
-      .arena { grid-template-columns: 1fr; }
-      .side-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
-      .ticket { grid-column: span 1; }
+    @media (max-width: 1320px) {
+      .topbar { grid-template-columns: 250px 1fr; }
+      .status-strip { display: none; }
+      .workspace { grid-template-columns: minmax(0, 1fr) 330px; }
+      .rail { display: none; }
+      .hero-content { grid-template-columns: 1fr; }
+      .hero-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 860px) {
-      .nav { height: auto; padding: 14px 0; flex-wrap: wrap; }
-      .navlinks { display: none; }
-      .wallet { width: 100%; justify-content: space-between; }
-      .hero { padding-top: 34px; }
-      .headline { padding: 26px; border-radius: 28px; }
-      .facts { grid-template-columns: 1fr 1fr; }
-      .section-title { display: grid; margin-top: 46px; }
-      .terminal-head { flex-direction: column; align-items: stretch; }
-      .clock { width: 100%; }
-      .chart-wrap { min-height: 560px; }
-      .prediction-grid { right: 16px; width: calc(100% - 112px); top: 86px; bottom: 78px; }
-      .price-rail { right: calc(100% - 98px); top: 86px; bottom: 78px; }
-      .chart-footer { grid-template-columns: 1fr 1fr; }
-      .side-panel { grid-template-columns: 1fr; }
-      .system-grid { grid-template-columns: 1fr; }
-      .tape { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 540px) {
-      .shell { width: min(100% - 18px, 1480px); }
-      .hero h1 { font-size: 52px; }
-      .facts { grid-template-columns: 1fr; }
-      .fact { min-height: 88px; }
-      .value-xl { font-size: 38px; }
-      .prediction-grid { width: calc(100% - 54px); right: 12px; }
+    @media (max-width: 980px) {
+      .topbar { grid-template-columns: 1fr; height: auto; min-height: 64px; padding: 12px 14px; }
+      .tabs { justify-content: flex-start; overflow-x: auto; }
+      .workspace { width: min(100% - 18px, 1720px); grid-template-columns: 1fr; padding-top: 10px; }
+      .ticket { position: static; }
+      .chart-toolbar { align-items: stretch; flex-direction: column; }
+      .price-cluster { justify-content: space-between; }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .round-tape { grid-template-columns: repeat(2, 1fr); }
+      .chart-footer { grid-template-columns: repeat(2, 1fr); }
+      .chart-footer .stat:last-child { grid-column: span 2; }
+      .grid-zone { right: 16px; width: calc(100% - 110px); top: 70px; bottom: 58px; }
       .price-rail { display: none; }
-      .chart-footer { grid-template-columns: 1fr; }
-      .micro strong { font-size: 16px; }
+    }
+
+    @media (max-width: 600px) {
+      .hero-strip { padding: 18px; min-height: auto; }
+      .hero-title { font-size: 38px; }
+      .hero-metrics { grid-template-columns: 1fr; }
+      .arena { min-height: 520px; }
+      .grid-zone { width: calc(100% - 28px); right: 14px; left: 14px; top: 86px; bottom: 70px; }
+      .cell { font-size: 9px; min-height: 42px; }
+      .ticket-grid { grid-template-columns: 1fr; }
+      .round-tape { grid-template-columns: 1fr; }
+      .last-price strong { font-size: 24px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1185,670 +1078,563 @@
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="shell nav">
-      <div class="brand" aria-label="SPCX Launch Grid">
-        <div class="mark" aria-hidden="true"></div>
-        <div class="brand-title">
-          <strong>SPCX Launch Grid</strong>
-          <span>Candle close prediction arena</span>
-        </div>
-      </div>
-      <nav class="navlinks" aria-label="Primary">
-        <a href="#arena">Arena</a>
-        <a href="#rules">Rules</a>
-        <a href="#system">System</a>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="SPCX Launch Grid home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-copy"><strong>Launch Grid</strong><span>SPCX candle arena</span></span>
+      </a>
+      <nav class="tabs" aria-label="Main navigation">
+        <a class="tab active" href="#arena">Arena</a>
+        <a class="tab" href="#rounds">Rounds</a>
+        <a class="tab" href="#leaderboard">Leaderboard</a>
+        <a class="tab" href="design-pass.md">Design notes</a>
       </nav>
-      <div class="wallet">
-        <div class="pill"><span class="pulse-dot"></span><strong>Opening mode</strong></div>
-        <button class="cta" id="connectBtn">Enter demo</button>
+      <div class="status-strip" aria-label="Market status">
+        <div class="status-pill"><span>Feed</span><strong><i class="live-dot"></i> Simulated</strong></div>
+        <div class="status-pill"><span>Offer</span><strong>$135.00</strong></div>
+        <div class="status-pill"><span>Mode</span><strong>Points only</strong></div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main>
-    <section class="shell hero">
-      <div class="headline">
-        <div class="eyebrow"><span class="pulse-dot"></span> Nasdaq: SPCX · launch candle arena</div>
-        <h1>Bet the close of the <span class="orbital">first public candle.</span></h1>
-        <p class="hero-copy">A points-only prediction game for the SpaceX IPO open: the next candle becomes a segmented grid, players lock a square, and the close decides who climbs the leaderboard.</p>
-        <div class="hero-actions">
-          <button class="cta" onclick="document.querySelector('#arena').scrollIntoView({behavior:'smooth'})">Play the prototype</button>
-          <button class="ghost" onclick="document.querySelector('#rules').scrollIntoView({behavior:'smooth'})">See mechanics</button>
-        </div>
-        <div class="facts" aria-label="IPO context">
-          <div class="fact"><span>Offer price</span><strong>$135.00</strong><small>Per SEC 424B4</small></div>
-          <div class="fact"><span>Shares</span><strong>555.6M</strong><small>Class A offered</small></div>
-          <div class="fact"><span>Venue</span><strong>Nasdaq</strong><small>Plus Nasdaq Texas</small></div>
-          <div class="fact"><span>Game mode</span><strong>Points</strong><small>No cash wagering</small></div>
-        </div>
-      </div>
-
-      <aside class="launch-card" aria-label="Launch overview">
-        <div class="card-top">
-          <div>
-            <div class="label">Simulated open</div>
-            <div class="value-xl" id="heroPrice">$135.00</div>
+    <main class="workspace">
+      <aside class="rail" aria-label="Rooms and round state">
+        <section class="rail-section">
+          <div class="eyebrow"><span>Rooms</span><span>Live</span></div>
+          <div class="room-list">
+            <button class="room active"><span class="room-icon">SP</span><span><b>SPCX Open</b><small>1m candle close</small></span><span class="count" id="railPlayers">18.4K</span></button>
+            <button class="room"><span class="room-icon">ST</span><span><b>Starlink</b><small>Post-open sprint</small></span><span class="count">Soon</span></button>
+            <button class="room"><span class="room-icon">IX</span><span><b>Index Chase</b><small>Nasdaq basket</small></span><span class="count">Soon</span></button>
           </div>
-          <div class="pill"><span class="pulse-dot"></span> Live sim</div>
-        </div>
-        <div class="mini-chart">
-          <canvas id="miniChart" aria-hidden="true"></canvas>
-          <div class="mini-grid"></div>
-          <div class="live-badge"><span class="pulse-dot"></span> IPO auction feed</div>
-        </div>
-        <div class="tape">
-          <div><span>Players</span><strong id="heroPlayers">18,420</strong></div>
-          <div><span>Round pot</span><strong id="heroPot">742K pts</strong></div>
-          <div><span>Volatility</span><strong id="heroVol">Extreme</strong></div>
-        </div>
+        </section>
+        <section class="rail-section round-card">
+          <div class="eyebrow"><span>Round state</span><span id="railState">Open</span></div>
+          <div class="round-number"><strong id="railRound">042</strong><span>Round</span></div>
+          <div class="progress-track"><div class="progress-bar" id="railProgress"></div></div>
+          <p class="rail-note">Pick a close band, lock before the final five seconds, then settlement scores the close.</p>
+        </section>
+        <section class="rail-section">
+          <div class="eyebrow"><span>Design rule</span><span>v2</span></div>
+          <p class="rail-note">The chart is the product. UI chrome stays quiet until the player needs a decision.</p>
+        </section>
       </aside>
-    </section>
 
-    <section class="shell" id="arena">
-      <div class="section-title">
-        <h2>Choose the square. Survive the candle.</h2>
-        <p>The grid floats over the next candle. Pick a price band before lock. At settlement, the close price selects the winning square.</p>
-      </div>
-
-      <div class="arena">
-        <section class="terminal-panel" aria-label="Prediction arena">
-          <header class="terminal-head">
-            <div class="instrument">
-              <div class="ticker-orb">SPCX</div>
-              <div>
-                <h3>Space Exploration Technologies · Class A</h3>
-                <p>Round <span id="roundNo">042</span> · 1m close grid · demo points</p>
-              </div>
+      <section class="main">
+        <section class="hero-strip" aria-label="Product overview">
+          <div class="hero-content">
+            <div>
+              <div class="hero-kicker">Unofficial SPCX IPO launch game · free-to-play prototype</div>
+              <h1 class="hero-title">Predict the closing band of the next candle.</h1>
+              <p class="hero-copy">A premium trading-arcade interface: price action stays central, the grid is readable, and every state tells players exactly what to do next.</p>
             </div>
-            <div class="clock" aria-label="Round countdown">
-              <div class="clock-ring" id="clockRing" style="--timer-angle: 360deg"></div>
-              <div><div class="time" id="timer">00:35</div><span class="sub" id="timerState">select open</span></div>
+            <div class="hero-metrics">
+              <div class="metric"><span>IPO price</span><strong>$135</strong></div>
+              <div class="metric"><span>Shares</span><strong>555.6M</strong></div>
+              <div class="metric"><span>Scoring</span><strong>Points</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="chart-card" id="arena" aria-label="Prediction arena">
+          <header class="chart-toolbar">
+            <div class="instrument">
+              <div class="ticker">SPCX</div>
+              <div><h2>Space Exploration Technologies · Class A</h2><p>Simulated first-trade environment · 1 minute close grid</p></div>
+            </div>
+            <div class="price-cluster">
+              <div class="last-price"><strong id="lastPrice">$135.00</strong><span id="moveLabel">+0.00%</span></div>
+              <div class="timer-box"><span><em>Lock</em><em id="lockState">Open</em></span><strong id="timer">00:35</strong></div>
             </div>
           </header>
 
-          <div class="chart-wrap">
-            <canvas id="mainChart" aria-label="Simulated SPCX candle chart"></canvas>
-            <div class="prediction-grid" id="predictionGrid" aria-label="Prediction grid"></div>
+          <div class="arena">
+            <canvas id="chart" aria-label="Simulated SPCX price chart"></canvas>
             <div class="price-rail" id="priceRail" aria-hidden="true"></div>
-            <div class="chart-scanline" aria-hidden="true"></div>
+            <div class="grid-zone" id="grid" aria-label="Prediction grid"></div>
+            <div class="settlement-line" id="settlementLine"></div>
             <div class="settlement" id="settlement">
-              <div class="settle-card">
-                <div class="label">Candle settled</div>
-                <div class="big" id="settleTitle">Orbit hit</div>
-                <p id="settleCopy">The close landed inside your selected launch corridor.</p>
-                <button class="cta" id="nextRoundBtn">Next round</button>
+              <div class="settlement-card">
+                <div class="mini">Candle settlement</div>
+                <h3 id="settleTitle">Band hit</h3>
+                <p id="settleText">The close landed inside the selected range.</p>
+                <button class="secondary-button" id="nextRound">Start next round</button>
               </div>
             </div>
           </div>
 
           <footer class="chart-footer">
-            <div class="micro"><span>Last price</span><strong id="lastPrice">$135.00</strong></div>
-            <div class="micro positive"><span>Round move</span><strong id="roundMove">+0.00%</strong></div>
-            <div class="micro"><span>Lock depth</span><strong id="lockDepth">8,920 picks</strong></div>
-            <div class="micro"><span>Your score</span><strong id="yourScore">12,400 pts</strong></div>
+            <div class="stat"><span>Round open</span><strong id="roundOpen">$135.00</strong></div>
+            <div class="stat"><span>Close range</span><strong id="rangeLabel">$128.00–$142.00</strong></div>
+            <div class="stat"><span>Locked picks</span><strong id="lockedPicks">8,920</strong></div>
+            <div class="stat"><span>Round pool</span><strong id="poolLabel">742K pts</strong></div>
+            <div class="stat"><span>Your score</span><strong id="scoreLabel">12.4K pts</strong></div>
           </footer>
         </section>
 
-        <aside class="side-panel" aria-label="Game controls">
-          <section class="ticket">
-            <h3>Prediction ticket</h3>
-            <div class="ticket-grid">
-              <div class="ticket-line"><span>Selected</span><strong id="selectedCell">None</strong></div>
-              <div class="ticket-line"><span>Band</span><strong id="selectedBand">—</strong></div>
-              <div class="ticket-line"><span>Multiplier</span><strong id="selectedMult">—</strong></div>
-              <div class="ticket-line"><span>Potential</span><strong id="potentialWin">—</strong></div>
-            </div>
-            <div class="stake-row">
-              <input id="stakeInput" type="number" min="50" max="10000" step="50" value="500" aria-label="Stake in points" />
-              <div class="ticket-line"><span>Stake</span><strong>pts</strong></div>
-            </div>
-            <button class="place-btn" id="placeBtn" disabled>Lock square</button>
+        <section class="bottom-grid" id="rounds">
+          <section class="module" aria-label="Round tape">
+            <div class="module-head"><h3>Round tape</h3><span>Recent closes</span></div>
+            <div class="round-tape" id="roundTape"></div>
           </section>
-
-          <section class="panel-card">
-            <h3>Leaderboard</h3>
-            <div class="leaderboard" id="leaderboard"></div>
+          <section class="module" id="leaderboard" aria-label="Leaderboard">
+            <div class="module-head"><h3>Leaderboard</h3><span>Session</span></div>
+            <div class="leader-list" id="leaders"></div>
           </section>
+        </section>
+      </section>
 
-          <section class="panel-card">
-            <h3>Live lock feed</h3>
+      <aside class="ticket" aria-label="Prediction ticket">
+        <div class="ticket-top"><h2>Prediction ticket</h2><p>Select one square. Rows are closing price bands; lanes are risk/reward multipliers.</p></div>
+        <div class="ticket-body">
+          <div class="selection-box">
+            <span>Current pick</span>
+            <strong id="pickTitle">No square selected</strong>
+            <p id="pickDetail">Choose a band on the chart grid to price the ticket.</p>
+          </div>
+          <div class="ticket-grid">
+            <div class="ticket-metric"><span>Band</span><strong id="pickBand">—</strong></div>
+            <div class="ticket-metric"><span>Lane</span><strong id="pickLane">—</strong></div>
+            <div class="ticket-metric"><span>Multiplier</span><strong id="pickMult">—</strong></div>
+            <div class="ticket-metric"><span>Implied odds</span><strong id="pickOdds">—</strong></div>
+          </div>
+          <div class="field"><label for="stake">Stake · points</label><input id="stake" type="number" value="500" min="50" max="10000" step="50"></div>
+          <div class="ticket-metric"><span>Potential score</span><strong id="potential">—</strong></div>
+          <button class="lock-button" id="lockBtn" disabled>Lock square</button>
+          <section class="module" aria-label="Live feed">
+            <div class="module-head"><h3>Live feed</h3><span>Locks</span></div>
             <div class="feed" id="feed"></div>
           </section>
-        </aside>
-      </div>
-    </section>
+        </div>
+        <div class="rules"><b>Compliance posture:</b> this prototype is free-to-play points. Real-money prediction requires jurisdiction, KYC, custody, market-data licensing, and legal review.</div>
+      </aside>
 
-    <section class="shell" id="rules">
-      <div class="section-title">
-        <h2>The mechanic is dead simple.</h2>
-        <p>Fast enough for the IPO open, clear enough for casual players, strategic enough for chart people.</p>
-      </div>
-      <div class="system-grid">
-        <article class="system-panel"><div class="num">① Segment</div><h3>Next candle becomes a grid</h3><p>Each row is a price close band around the current market. Each column is a risk lane with a different multiplier.</p></article>
-        <article class="system-panel"><div class="num">② Lock</div><h3>Players pick before countdown</h3><p>Squares lock near the end of the candle. Late entries are blocked to keep the game fair and readable.</p></article>
-        <article class="system-panel"><div class="num">③ Settle</div><h3>Close price selects winners</h3><p>When the candle closes, the winning band lights up. Correct players get points, streaks, and leaderboard movement.</p></article>
-      </div>
-    </section>
-
-    <section class="shell" id="system">
-      <div class="section-title">
-        <h2>Built to become a real product.</h2>
-        <p>This prototype is front-end only, but the product shape is ready for live market data, accounts, rooms, and anti-abuse controls.</p>
-      </div>
-      <div class="system-grid">
-        <article class="system-panel"><div class="num">Market feed</div><h3>IPO open simulator now, live data later</h3><p>Swap the local price generator for a websocket from Nasdaq/Polygon/IEX once the instrument is active and licensed.</p></article>
-        <article class="system-panel"><div class="num">Game server</div><h3>Authoritative settlement</h3><p>Server owns candle timing, grid bands, lock cutoff, close price, and score updates. Client is display only.</p></article>
-        <article class="system-panel"><div class="num">Compliance</div><h3>Points first</h3><p>Keep public launch as free-to-play points. Real-money prediction requires jurisdiction, KYC, custody, and gambling/securities review.</p></article>
-      </div>
-    </section>
-
-    <p class="shell legal">Unofficial prototype. Not affiliated with, endorsed by, or sponsored by SpaceX, Nasdaq, or any broker-dealer. No real-money wagering. No financial advice. IPO facts shown are sourced from the SEC 424B4 filing retrieved during prototype build.</p>
-  </main>
+      <p class="legal">Unofficial prototype. Not affiliated with, endorsed by, or sponsored by SpaceX, Nasdaq, or any broker-dealer. No real-money wagering. No financial advice. IPO facts shown are sourced from the SEC filing checked during build.</p>
+    </main>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     (() => {
-      const ROWS = 9;
-      const COLS = 6;
+      const ROWS = 8;
+      const COLS = 5;
       const ROUND_SECONDS = 35;
       const LOCK_SECONDS = 5;
-      const BASE_PRICE = 135;
-      const names = ['Vega', 'Nova', 'Atlas', 'Kite', 'Rook', 'Luna', 'Mako', 'Ion', 'Doc', 'Astra', 'Nyx', 'Vex'];
-      const colors = ['#41e9ff', '#ffb24a', '#8a5cff', '#62ffc6', '#ff4d6d', '#89fbff'];
-
-      const $ = (sel) => document.querySelector(sel);
-      const grid = $('#predictionGrid');
-      const priceRail = $('#priceRail');
-      const mainCanvas = $('#mainChart');
-      const miniCanvas = $('#miniChart');
-      const ctx = mainCanvas.getContext('2d');
-      const miniCtx = miniCanvas.getContext('2d');
+      const BASE = 135;
+      const $ = (s) => document.querySelector(s);
+      const grid = $('#grid');
+      const chart = $('#chart');
+      const ctx = chart.getContext('2d');
+      const playerNames = ['Nova', 'Vex', 'Atlas', 'Mako', 'Ion', 'Rook', 'Luna', 'Drift', 'Astra', 'Vector'];
+      const chipColors = ['#7c5cff', '#9f8cff', '#57a2ff', '#1fd99d', '#f0b45f'];
 
       let candles = [];
-      let ticks = [];
-      let price = BASE_PRICE;
-      let roundStartPrice = BASE_PRICE;
+      let trace = [];
+      let price = BASE;
+      let open = BASE;
       let round = 42;
       let timeLeft = ROUND_SECONDS;
       let selected = null;
-      let lockedPick = null;
+      let locked = null;
       let score = 12400;
       let streak = 2;
-      let settling = false;
+      let pool = 742000;
       let players = 18420;
-      let pot = 742000;
-      let feedTimer = 0;
-      let railTimer = 0;
-      let lastFrame = performance.now();
+      let feedClock = 0;
+      let tape = [];
+      let settling = false;
+      let last = performance.now();
 
-      function money(n) { return '$' + n.toFixed(2); }
-      function pct(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + '%'; }
-      function compact(n) {
-        if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-        if (n >= 1000) return Math.round(n / 1000) + 'K';
-        return String(Math.round(n));
-      }
-      function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
-      function rand(min, max) { return min + Math.random() * (max - min); }
+      const money = (n) => '$' + n.toFixed(2);
+      const compact = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : String(Math.round(n));
+      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+      const rand = (a, b) => a + Math.random() * (b - a);
+      const pct = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
 
-      function showToast(msg) {
-        const toast = $('#toast');
-        toast.textContent = msg;
-        toast.classList.add('show');
-        clearTimeout(showToast.t);
-        showToast.t = setTimeout(() => toast.classList.remove('show'), 2600);
+      function toast(text) {
+        const t = $('#toast');
+        t.textContent = text;
+        t.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => t.classList.remove('show'), 2400);
       }
 
-      function seedCandles() {
+      function seed() {
         candles = [];
-        let p = BASE_PRICE - 2.8;
-        for (let i = 0; i < 58; i++) {
-          const open = p;
-          const drift = Math.sin(i / 5) * .42 + rand(-.75, .82);
-          const close = clamp(open + drift, 127, 146);
-          const high = Math.max(open, close) + rand(.12, 1.2);
-          const low = Math.min(open, close) - rand(.12, 1.1);
-          candles.push({ open, high, low, close });
-          p = close;
+        let p = BASE - 1.8;
+        for (let i = 0; i < 68; i++) {
+          const cOpen = p;
+          const impulse = Math.sin(i / 5) * .28 + rand(-.5, .58);
+          const cClose = clamp(cOpen + impulse, 126, 147);
+          candles.push({ open: cOpen, close: cClose, high: Math.max(cOpen, cClose) + rand(.08, .85), low: Math.min(cOpen, cClose) - rand(.08, .75) });
+          p = cClose;
         }
-        price = candles[candles.length - 1].close;
-        roundStartPrice = price;
-        ticks = Array.from({length: 40}, (_, i) => price + Math.sin(i / 5) * .2 + rand(-.08, .08));
+        price = candles.at(-1).close;
+        open = price;
+        trace = Array.from({ length: 38 }, (_, i) => price + Math.sin(i / 4) * .16 + rand(-.06, .06));
+        tape = [
+          { round: 41, band: 'R3', close: 136.18, score: '+1.2K' },
+          { round: 40, band: 'R5', close: 133.72, score: '-500' },
+          { round: 39, band: 'R4', close: 134.91, score: '+820' },
+          { round: 38, band: 'R2', close: 138.40, score: '+2.4K' },
+          { round: 37, band: 'R6', close: 132.02, score: '+610' }
+        ];
       }
 
-      function priceRange() {
-        const values = candles.flatMap(c => [c.high, c.low]).concat(ticks);
-        const hi = Math.max(...values, BASE_PRICE + 7);
-        const lo = Math.min(...values, BASE_PRICE - 7);
-        const pad = Math.max(2.8, (hi - lo) * .18);
+      function range() {
+        const all = candles.flatMap(c => [c.high, c.low]).concat(trace, BASE);
+        const hi = Math.max(...all);
+        const lo = Math.min(...all);
+        const pad = Math.max(2.4, (hi - lo) * .18);
         return { min: lo - pad, max: hi + pad };
       }
 
       function bands() {
-        const range = priceRange();
-        const span = range.max - range.min;
-        const step = span / ROWS;
-        const arr = [];
-        for (let r = 0; r < ROWS; r++) {
-          const top = range.max - r * step;
+        const r = range();
+        const step = (r.max - r.min) / ROWS;
+        return Array.from({ length: ROWS }, (_, row) => {
+          const top = r.max - row * step;
           const bottom = top - step;
-          arr.push({ top, bottom, label: money(bottom) + '–' + money(top) });
-        }
-        return arr;
+          return { top, bottom, label: `${money(bottom)}–${money(top)}` };
+        });
       }
 
-      function bandForPrice(p) {
+      function bandFor(p) {
         const b = bands();
-        return clamp(b.findIndex(x => p <= x.top && p >= x.bottom), 0, ROWS - 1);
+        const idx = b.findIndex(x => p <= x.top && p >= x.bottom);
+        return clamp(idx === -1 ? ROWS - 1 : idx, 0, ROWS - 1);
       }
 
-      function multiplierFor(col, row) {
-        const distance = Math.abs(row - Math.floor(ROWS / 2));
-        return (1.15 + col * .22 + distance * .18).toFixed(2) + 'x';
+      function mult(row, col) {
+        const distance = Math.abs(row - (ROWS - 1) / 2);
+        return +(1.16 + col * .28 + distance * .15).toFixed(2);
+      }
+
+      function odds(row) {
+        const distance = Math.abs(row - (ROWS - 1) / 2);
+        return Math.max(9, Math.round(28 - distance * 4 + rand(-1, 1))) + '%';
       }
 
       function buildGrid() {
         grid.innerHTML = '';
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            const cell = document.createElement('button');
-            cell.type = 'button';
-            cell.className = 'cell';
-            cell.dataset.row = r;
-            cell.dataset.col = c;
-            cell.setAttribute('aria-label', `Select row ${r + 1}, lane ${c + 1}`);
-            cell.textContent = c === COLS - 1 ? 'CLOSE' : '×' + (1 + c * .2).toFixed(1);
-            cell.addEventListener('click', () => selectCell(r, c));
-            grid.appendChild(cell);
+        for (let row = 0; row < ROWS; row++) {
+          for (let col = 0; col < COLS; col++) {
+            const btn = document.createElement('button');
+            btn.className = 'cell';
+            btn.type = 'button';
+            btn.dataset.row = row;
+            btn.dataset.col = col;
+            btn.style.setProperty('--heat', (0.018 + (ROWS - row) * .003 + col * .005).toFixed(3));
+            btn.textContent = col === COLS - 1 ? 'CLOSE' : `${mult(row, col).toFixed(2)}x`;
+            btn.setAttribute('aria-label', `Select row ${row + 1}, lane ${col + 1}`);
+            btn.addEventListener('click', () => choose(row, col));
+            grid.appendChild(btn);
           }
         }
-        addCrowdChips();
-        renderPriceRail();
+        addOccupants();
+        renderBands();
       }
 
-      function renderPriceRail() {
+      function renderBands() {
+        const rail = $('#priceRail');
+        rail.innerHTML = bands().map(b => `<div class="band-label">${b.label}</div>`).join('');
         const b = bands();
-        priceRail.innerHTML = '';
-        b.forEach((band) => {
-          const div = document.createElement('div');
-          div.className = 'price-band-label';
-          div.textContent = band.label;
-          priceRail.appendChild(div);
-        });
+        $('#rangeLabel').textContent = `${money(b.at(-1).bottom)}–${money(b[0].top)}`;
       }
 
-      function addCrowdChips() {
+      function addOccupants() {
         const cells = Array.from(grid.children);
-        cells.forEach(cell => cell.querySelectorAll('.chip').forEach(chip => chip.remove()));
-        for (let i = 0; i < 34; i++) {
-          const r = clamp(Math.floor(rand(0, ROWS)), 0, ROWS - 1);
-          const c = clamp(Math.floor(rand(0, COLS)), 0, COLS - 1);
-          const cell = cells[r * COLS + c];
-          if (!cell) continue;
-          const chip = document.createElement('span');
-          chip.className = 'chip';
-          chip.style.setProperty('--chip-color', colors[Math.floor(rand(0, colors.length))]);
-          chip.style.setProperty('--dx', rand(-14, 14).toFixed(0) + 'px');
-          chip.style.setProperty('--dy', rand(-12, 12).toFixed(0) + 'px');
-          cell.appendChild(chip);
+        cells.forEach(c => c.querySelectorAll('.occupant').forEach(o => o.remove()));
+        for (let i = 0; i < 26; i++) {
+          const row = clamp(Math.floor(rand(0, ROWS)), 0, ROWS - 1);
+          const col = clamp(Math.floor(rand(0, COLS)), 0, COLS - 1);
+          const dot = document.createElement('span');
+          dot.className = 'occupant';
+          dot.style.setProperty('--x', rand(7, 22).toFixed(0) + 'px');
+          dot.style.setProperty('--y', rand(7, 22).toFixed(0) + 'px');
+          dot.style.setProperty('--c', chipColors[Math.floor(rand(0, chipColors.length))]);
+          cells[row * COLS + col]?.appendChild(dot);
         }
       }
 
-      function selectCell(row, col) {
-        if (timeLeft <= LOCK_SECONDS || lockedPick || settling) {
-          showToast('Grid locked. Wait for the next candle.');
+      function choose(row, col) {
+        if (settling || locked || timeLeft <= LOCK_SECONDS) {
+          toast('Grid is locked for this candle. Next round opens after settlement.');
           return;
         }
         selected = { row, col };
-        grid.querySelectorAll('.cell').forEach(cell => cell.classList.remove('selected'));
-        const cell = grid.children[row * COLS + col];
-        cell.classList.add('selected');
-        const band = bands()[row];
-        const mult = multiplierFor(col, row);
-        const stake = Number($('#stakeInput').value || 0);
-        $('#selectedCell').textContent = `R${row + 1} · L${col + 1}`;
-        $('#selectedBand').textContent = band.label.replace('–', ' → ');
-        $('#selectedMult').textContent = mult;
-        $('#potentialWin').textContent = compact(stake * Number(mult.replace('x', ''))) + ' pts';
-        $('#placeBtn').disabled = false;
+        Array.from(grid.children).forEach(c => c.classList.remove('selected'));
+        grid.children[row * COLS + col].classList.add('selected');
+        updateTicket();
+        $('#lockBtn').disabled = false;
+      }
+
+      function updateTicket() {
+        if (!selected) return;
+        const b = bands()[selected.row];
+        const m = mult(selected.row, selected.col);
+        const stake = Number($('#stake').value || 0);
+        $('#pickTitle').textContent = `Row ${selected.row + 1} · Lane ${selected.col + 1}`;
+        $('#pickDetail').textContent = `Close must land between ${b.label.replace('–', ' and ')}.`;
+        $('#pickBand').textContent = b.label;
+        $('#pickLane').textContent = selected.col === COLS - 1 ? 'Close lane' : `Lane ${selected.col + 1}`;
+        $('#pickMult').textContent = m.toFixed(2) + 'x';
+        $('#pickOdds').textContent = odds(selected.row);
+        $('#potential').textContent = compact(stake * m * (1 + streak * .05)) + ' pts';
       }
 
       function lockPick() {
-        if (!selected) {
-          showToast('Pick a square first.');
-          return;
-        }
-        if (timeLeft <= LOCK_SECONDS) {
-          showToast('Lock window closed.');
-          return;
-        }
-        lockedPick = {...selected, stake: Number($('#stakeInput').value || 0)};
-        $('#placeBtn').disabled = true;
-        grid.querySelectorAll('.cell').forEach(cell => cell.classList.add('locked'));
-        const band = bands()[lockedPick.row];
-        addFeed('You locked', `${band.label} · ${multiplierFor(lockedPick.col, lockedPick.row)}`);
-        showToast('Square locked. Hold through the candle close.');
+        if (!selected) return toast('Select a square first.');
+        if (timeLeft <= LOCK_SECONDS) return toast('Lock window already closed.');
+        locked = { ...selected, stake: Number($('#stake').value || 0) };
+        $('#lockBtn').disabled = true;
+        grid.querySelectorAll('.cell').forEach(c => c.classList.add('locked'));
+        feed('You', `locked Row ${locked.row + 1} / Lane ${locked.col + 1}`);
+        toast('Ticket locked. Watch the settlement line.');
       }
 
-      function addFeed(who, what) {
-        const feed = $('#feed');
+      function feed(who, action) {
         const item = document.createElement('div');
         item.className = 'feed-item';
-        item.innerHTML = `<strong>${who}</strong> picked <em>${what}</em>`;
-        feed.prepend(item);
-        while (feed.children.length > 8) feed.removeChild(feed.lastChild);
+        item.innerHTML = `<small>${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small><b>${who}</b> <em>${action}</em>`;
+        $('#feed').prepend(item);
+        while ($('#feed').children.length > 8) $('#feed').lastElementChild.remove();
       }
 
       function randomFeed() {
-        const name = names[Math.floor(rand(0, names.length))];
-        const r = clamp(Math.floor(rand(0, ROWS)), 0, ROWS - 1);
-        const c = clamp(Math.floor(rand(0, COLS)), 0, COLS - 1);
-        const band = bands()[r];
-        addFeed(name, `R${r + 1}/L${c + 1} · ${band.label}`);
+        const n = playerNames[Math.floor(rand(0, playerNames.length))];
+        const row = Math.floor(rand(0, ROWS));
+        const col = Math.floor(rand(0, COLS));
+        feed(n, `took R${row + 1}/L${col + 1}`);
       }
 
-      function renderLeaderboard() {
-        const board = $('#leaderboard');
+      function renderLeaders() {
         const rows = [
-          ['VX', 'Vex', 'Launch sniper', 38920],
-          ['DK', 'DriftKing', '3x streak', 35110],
-          ['IO', 'Ion', 'Grid runner', 28840],
+          ['VX', 'Vex', 'Opening sniper', 38920],
+          ['DK', 'DriftKing', '5-round ROI', 35110],
+          ['IO', 'Ion', 'Band discipline', 28840],
           ['YOU', 'You', `${streak}x streak`, score],
           ['NV', 'Nova', 'Close hunter', 10740]
-        ].sort((a,b) => b[3] - a[3]);
-        board.innerHTML = rows.map((r, i) => `
-          <div class="leader">
-            <div class="avatar">${r[0]}</div>
-            <div><b>${i + 1}. ${r[1]}</b><small>${r[2]}</small></div>
-            <strong>${compact(r[3])}</strong>
-          </div>
-        `).join('');
+        ].sort((a, b) => b[3] - a[3]);
+        $('#leaders').innerHTML = rows.map((r, i) => `<div class="leader"><div class="avatar">${r[0]}</div><div><b>${i + 1}. ${r[1]}</b><small>${r[2]}</small></div><strong>${compact(r[3])}</strong></div>`).join('');
       }
 
-      function resizeCanvas(canvas) {
-        const rect = canvas.getBoundingClientRect();
+      function renderTape() {
+        $('#roundTape').innerHTML = tape.slice(0, 5).map(t => `<div class="tape-item"><small>Round ${String(t.round).padStart(3, '0')} · ${t.band}</small><strong>${money(t.close)}</strong><span class="${t.score.startsWith('+') ? 'positive' : 'negative'}">${t.score} pts</span></div>`).join('');
+      }
+
+      function resize() {
+        const rect = chart.getBoundingClientRect();
         const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-        const nextW = Math.max(1, Math.floor(rect.width * dpr));
-        const nextH = Math.max(1, Math.floor(rect.height * dpr));
-        if (canvas.width !== nextW || canvas.height !== nextH) {
-          canvas.width = nextW;
-          canvas.height = nextH;
+        const w = Math.max(1, Math.floor(rect.width * dpr));
+        const h = Math.max(1, Math.floor(rect.height * dpr));
+        if (chart.width !== w || chart.height !== h) {
+          chart.width = w;
+          chart.height = h;
         }
-        const context = canvas.getContext('2d');
-        context.setTransform(dpr, 0, 0, dpr, 0, 0);
-        return { w: rect.width, h: rect.height, dpr };
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { w: rect.width, h: rect.height };
       }
 
-      function drawChart() {
-        const { w, h } = resizeCanvas(mainCanvas);
+      function draw() {
+        const { w, h } = resize();
+        const pad = { l: 44, r: 30, t: 38, b: 42 };
+        const plotW = w - pad.l - pad.r;
+        const plotH = h - pad.t - pad.b;
+        const r = range();
+        const y = (p) => pad.t + (r.max - p) / (r.max - r.min) * plotH;
+        const x = (i, total = candles.length + 12) => pad.l + i / total * plotW;
         ctx.clearRect(0, 0, w, h);
-        const pad = { left: 48, right: 40, top: 40, bottom: 48 };
-        const plotW = w - pad.left - pad.right;
-        const plotH = h - pad.top - pad.bottom;
-        const range = priceRange();
-        const y = (p) => pad.top + (range.max - p) / (range.max - range.min) * plotH;
-        const x = (i) => pad.left + i / (candles.length + 8) * plotW;
-
-        ctx.save();
-        ctx.fillStyle = '#02060a';
+        ctx.fillStyle = '#05070a';
         ctx.fillRect(0, 0, w, h);
 
+        const gridX = pad.l + plotW * .56;
+        ctx.fillStyle = 'rgba(124,92,255,.035)';
+        ctx.fillRect(gridX, pad.t, w - gridX - pad.r, plotH);
+
         for (let i = 0; i <= 8; i++) {
-          const yy = pad.top + i / 8 * plotH;
-          ctx.strokeStyle = i === 4 ? 'rgba(137,251,255,.18)' : 'rgba(137,251,255,.075)';
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(pad.left, yy);
-          ctx.lineTo(w - pad.right, yy);
-          ctx.stroke();
+          const yy = pad.t + i / 8 * plotH;
+          ctx.strokeStyle = i === 4 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.052)';
+          ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke();
         }
-        for (let i = 0; i <= 12; i++) {
-          const xx = pad.left + i / 12 * plotW;
-          ctx.strokeStyle = 'rgba(137,251,255,.055)';
-          ctx.beginPath();
-          ctx.moveTo(xx, pad.top);
-          ctx.lineTo(xx, h - pad.bottom);
-          ctx.stroke();
+        for (let i = 0; i <= 10; i++) {
+          const xx = pad.l + i / 10 * plotW;
+          ctx.strokeStyle = 'rgba(255,255,255,.04)';
+          ctx.beginPath(); ctx.moveTo(xx, pad.t); ctx.lineTo(xx, h - pad.b); ctx.stroke();
         }
 
         candles.forEach((c, i) => {
           const xx = x(i);
-          const cw = Math.max(4, plotW / (candles.length + 12) * .56);
+          const width = Math.max(3, plotW / 96);
           const up = c.close >= c.open;
-          ctx.strokeStyle = up ? 'rgba(98,255,198,.92)' : 'rgba(255,77,109,.88)';
-          ctx.fillStyle = up ? 'rgba(98,255,198,.72)' : 'rgba(255,77,109,.7)';
-          ctx.lineWidth = 1.4;
-          ctx.beginPath();
-          ctx.moveTo(xx, y(c.high));
-          ctx.lineTo(xx, y(c.low));
-          ctx.stroke();
+          ctx.strokeStyle = up ? 'rgba(31,217,157,.78)' : 'rgba(255,90,116,.72)';
+          ctx.fillStyle = up ? 'rgba(31,217,157,.62)' : 'rgba(255,90,116,.58)';
+          ctx.beginPath(); ctx.moveTo(xx, y(c.high)); ctx.lineTo(xx, y(c.low)); ctx.stroke();
           const top = Math.min(y(c.open), y(c.close));
           const bottom = Math.max(y(c.open), y(c.close));
-          ctx.fillRect(xx - cw / 2, top, cw, Math.max(2, bottom - top));
+          ctx.fillRect(xx - width / 2, top, width, Math.max(2, bottom - top));
         });
 
-        const startX = x(candles.length + .3);
-        const endX = w - pad.right - 8;
-        const liveOpen = roundStartPrice;
-        const liveHigh = Math.max(...ticks, liveOpen);
-        const liveLow = Math.min(...ticks, liveOpen);
-        const liveClose = price;
-        const liveUp = liveClose >= liveOpen;
-        const bodyX = startX + 24;
-        const bodyW = 18;
-        ctx.strokeStyle = liveUp ? '#62ffc6' : '#ff4d6d';
-        ctx.fillStyle = liveUp ? 'rgba(98,255,198,.86)' : 'rgba(255,77,109,.82)';
-        ctx.shadowColor = liveUp ? 'rgba(98,255,198,.6)' : 'rgba(255,77,109,.55)';
-        ctx.shadowBlur = 14;
+        const startX = x(candles.length + 1);
+        const endX = w - pad.r - 12;
+        const hi = Math.max(...trace, open);
+        const lo = Math.min(...trace, open);
+        const up = price >= open;
+        const candleX = startX + 24;
+        ctx.strokeStyle = up ? '#1fd99d' : '#ff5a74';
+        ctx.fillStyle = up ? '#1fd99d' : '#ff5a74';
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(bodyX, y(liveHigh));
-        ctx.lineTo(bodyX, y(liveLow));
-        ctx.stroke();
-        ctx.fillRect(bodyX - bodyW/2, Math.min(y(liveOpen), y(liveClose)), bodyW, Math.max(3, Math.abs(y(liveClose) - y(liveOpen))));
-        ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.moveTo(candleX, y(hi)); ctx.lineTo(candleX, y(lo)); ctx.stroke();
+        ctx.fillRect(candleX - 9, Math.min(y(open), y(price)), 18, Math.max(3, Math.abs(y(price) - y(open))));
 
-        ctx.strokeStyle = 'rgba(255,178,74,.68)';
-        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = 'rgba(255,255,255,.42)';
+        ctx.lineWidth = 1.6;
         ctx.beginPath();
-        ctx.moveTo(pad.left, y(BASE_PRICE));
-        ctx.lineTo(w - pad.right, y(BASE_PRICE));
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.strokeStyle = 'rgba(137,251,255,.38)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ticks.forEach((p, i) => {
-          const xx = startX + i / Math.max(1, ticks.length - 1) * (endX - startX);
+        trace.forEach((p, i) => {
+          const xx = startX + i / Math.max(1, trace.length - 1) * (endX - startX);
           const yy = y(p);
           if (i === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
         });
         ctx.stroke();
 
-        const lastX = endX;
-        const lastY = y(price);
-        const grd = ctx.createRadialGradient(lastX, lastY, 0, lastX, lastY, 42);
-        grd.addColorStop(0, 'rgba(137,251,255,.65)');
-        grd.addColorStop(1, 'rgba(137,251,255,0)');
-        ctx.fillStyle = grd;
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 42, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#eaffff';
-        ctx.beginPath();
-        ctx.arc(lastX, lastY, 4.5, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.setLineDash([5, 6]);
+        ctx.strokeStyle = 'rgba(240,180,95,.56)';
+        ctx.beginPath(); ctx.moveTo(pad.l, y(BASE)); ctx.lineTo(w - pad.r, y(BASE)); ctx.stroke();
+        ctx.setLineDash([]);
 
-        ctx.fillStyle = 'rgba(219,234,246,.62)';
-        ctx.font = '11px ui-monospace, monospace';
-        ctx.textAlign = 'left';
-        ctx.fillText('OFFER $135.00', pad.left, y(BASE_PRICE) - 8);
+        ctx.fillStyle = 'rgba(201,206,218,.66)';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.fillText('OFFER 135.00', pad.l, y(BASE) - 8);
         ctx.textAlign = 'right';
-        ctx.fillStyle = 'rgba(238,248,255,.88)';
-        ctx.fillText(money(price), w - pad.right, lastY - 10);
-        ctx.restore();
+        ctx.fillStyle = 'rgba(244,246,251,.9)';
+        ctx.fillText(money(price), w - pad.r, y(price) - 9);
+        ctx.textAlign = 'left';
+
+        const dotX = endX, dotY = y(price);
+        ctx.fillStyle = up ? '#1fd99d' : '#ff5a74';
+        ctx.beginPath(); ctx.arc(dotX, dotY, 4, 0, Math.PI * 2); ctx.fill();
       }
 
-      function drawMiniChart() {
-        const { w, h } = resizeCanvas(miniCanvas);
-        miniCtx.clearRect(0, 0, w, h);
-        const range = priceRange();
-        const pad = 24;
-        const y = (p) => pad + (range.max - p) / (range.max - range.min) * (h - pad * 2);
-        const x = (i) => pad + i / Math.max(1, ticks.length - 1) * (w - pad * 2);
-        miniCtx.fillStyle = '#040a11';
-        miniCtx.fillRect(0, 0, w, h);
-        const grad = miniCtx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, 'rgba(65,233,255,.22)');
-        grad.addColorStop(1, 'rgba(65,233,255,0)');
-        miniCtx.beginPath();
-        ticks.forEach((p, i) => {
-          const xx = x(i), yy = y(p);
-          if (i === 0) miniCtx.moveTo(xx, yy); else miniCtx.lineTo(xx, yy);
-        });
-        miniCtx.lineTo(x(ticks.length - 1), h - pad);
-        miniCtx.lineTo(x(0), h - pad);
-        miniCtx.closePath();
-        miniCtx.fillStyle = grad;
-        miniCtx.fill();
-        miniCtx.strokeStyle = '#89fbff';
-        miniCtx.lineWidth = 2;
-        miniCtx.beginPath();
-        ticks.forEach((p, i) => {
-          const xx = x(i), yy = y(p);
-          if (i === 0) miniCtx.moveTo(xx, yy); else miniCtx.lineTo(xx, yy);
-        });
-        miniCtx.stroke();
-        miniCtx.fillStyle = '#fff';
-        miniCtx.beginPath();
-        miniCtx.arc(x(ticks.length - 1), y(price), 4, 0, Math.PI * 2);
-        miniCtx.fill();
-      }
-
-      function updatePrice(dt) {
+      function tick(dt) {
         if (settling) return;
-        const shock = rand(-.32, .34) + Math.sin(Date.now() / 900) * .06;
-        const anchor = (BASE_PRICE - price) * .012;
-        price = clamp(price + shock + anchor, 126, 148);
-        ticks.push(price);
-        if (ticks.length > 58) ticks.shift();
-        if (Math.random() < .08) {
-          const open = candles[candles.length - 1].close;
-          const close = price + rand(-.18, .18);
-          candles.push({ open, close, high: Math.max(open, close) + rand(.04, .8), low: Math.min(open, close) - rand(.04, .8) });
-          if (candles.length > 58) candles.shift();
+        timeLeft -= dt;
+        const shock = rand(-.22, .24) + Math.sin(Date.now() / 1200) * .04;
+        price = clamp(price + shock + (BASE - price) * .01, 126, 148);
+        trace.push(price);
+        if (trace.length > 62) trace.shift();
+        if (Math.random() < .07) {
+          const prev = candles.at(-1).close;
+          const c = price + rand(-.1, .1);
+          candles.push({ open: prev, close: c, high: Math.max(prev, c) + rand(.04, .45), low: Math.min(prev, c) - rand(.04, .45) });
+          if (candles.length > 68) candles.shift();
         }
+        feedClock += dt;
+        if (feedClock > 2.2 && timeLeft > LOCK_SECONDS + 1) {
+          feedClock = 0;
+          randomFeed();
+        }
+        if (timeLeft <= 0) settle();
       }
 
-      function updateHUD() {
-        const move = (price / roundStartPrice - 1) * 100;
-        $('#heroPrice').textContent = money(price);
-        $('#lastPrice').textContent = money(price);
-        $('#roundMove').textContent = pct(move);
-        $('#roundMove').parentElement.classList.toggle('positive', move >= 0);
-        $('#roundMove').parentElement.classList.toggle('negative', move < 0);
-        $('#heroPlayers').textContent = compact(players + Math.floor(rand(-80, 140)));
-        $('#heroPot').textContent = compact(pot) + ' pts';
-        $('#heroVol').textContent = Math.abs(move) > 2.6 ? 'Nuclear' : Math.abs(move) > 1.2 ? 'Extreme' : 'High';
-        $('#lockDepth').textContent = compact(8920 + Math.floor((ROUND_SECONDS - timeLeft) * 220 + rand(-60, 80))) + ' picks';
-        $('#yourScore').textContent = compact(score) + ' pts';
-        $('#roundNo').textContent = String(round).padStart(3, '0');
-        const mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-        const ss = String(Math.max(0, Math.ceil(timeLeft % 60))).padStart(2, '0');
-        $('#timer').textContent = `${mm}:${ss}`;
-        $('#timerState').textContent = timeLeft <= LOCK_SECONDS ? 'grid locked' : lockedPick ? 'pick locked' : 'select open';
-        $('#clockRing').style.setProperty('--timer-angle', `${timeLeft / ROUND_SECONDS * 360}deg`);
-        document.body.classList.toggle('locked', timeLeft <= LOCK_SECONDS);
-        if (timeLeft <= LOCK_SECONDS) grid.querySelectorAll('.cell').forEach(c => c.classList.add('locked'));
-        if (selected && !lockedPick) selectCell(selected.row, selected.col);
-      }
-
-      function settleRound() {
+      function settle() {
         settling = true;
-        const winningRow = bandForPrice(price);
-        const winningCol = COLS - 1;
+        timeLeft = 0;
+        const row = bandFor(price);
+        const lane = COLS - 1;
+        const winCell = grid.children[row * COLS + lane];
         grid.querySelectorAll('.cell').forEach(c => c.classList.remove('winner'));
-        const winCell = grid.children[winningRow * COLS + winningCol];
-        if (winCell) winCell.classList.add('winner');
+        winCell?.classList.add('winner');
+        const arenaRect = $('.arena').getBoundingClientRect();
+        const b = bands()[row];
+        const mid = (b.top + b.bottom) / 2;
+        const r = range();
+        const yPct = (r.max - mid) / (r.max - r.min) * 100;
+        $('#settlementLine').style.top = yPct + '%';
+        $('#settlementLine').classList.add('show');
 
-        let won = false;
-        let gain = 0;
-        if (lockedPick && lockedPick.row === winningRow) {
-          won = true;
-          const mult = Number(multiplierFor(lockedPick.col, lockedPick.row).replace('x', ''));
-          gain = Math.round(lockedPick.stake * mult * (1 + streak * .08));
+        let title = 'Missed band';
+        let text = `Close printed ${money(price)} in Row ${row + 1}.`;
+        if (locked && locked.row === row) {
+          const gain = Math.round(locked.stake * mult(locked.row, locked.col) * (1 + streak * .05));
           score += gain;
           streak += 1;
+          title = '+' + compact(gain);
+          text = `Close printed ${money(price)} in Row ${row + 1}. Your ticket paid with a ${streak}x streak.`;
         } else {
-          score = Math.max(0, score - (lockedPick ? lockedPick.stake : 0));
+          if (locked) score = Math.max(0, score - locked.stake);
           streak = 0;
         }
-        renderLeaderboard();
-
-        $('#settleTitle').textContent = won ? '+' + compact(gain) + ' pts' : 'Missed burn';
-        $('#settleCopy').textContent = won
-          ? `Close landed in Row ${winningRow + 1}. Your corridor paid with a ${streak}x streak bonus.`
-          : `Close landed in Row ${winningRow + 1}. Pick the close band next round.`;
+        tape.unshift({ round, band: 'R' + (row + 1), close: price, score: title.startsWith('+') ? title : (locked ? '-' + compact(locked.stake || 0) : '0') });
+        renderTape();
+        renderLeaders();
+        $('#settleTitle').textContent = title;
+        $('#settleText').textContent = text;
         $('#settlement').classList.add('show');
       }
 
-      function resetRound() {
+      function reset() {
+        settling = false;
         round += 1;
         timeLeft = ROUND_SECONDS;
         selected = null;
-        lockedPick = null;
-        settling = false;
-        roundStartPrice = price;
-        pot += Math.floor(rand(18000, 62000));
-        players += Math.floor(rand(120, 780));
+        locked = null;
+        open = price;
+        pool += Math.floor(rand(16000, 55000));
+        players += Math.floor(rand(180, 650));
         $('#settlement').classList.remove('show');
-        $('#selectedCell').textContent = 'None';
-        $('#selectedBand').textContent = '—';
-        $('#selectedMult').textContent = '—';
-        $('#potentialWin').textContent = '—';
-        $('#placeBtn').disabled = true;
+        $('#settlementLine').classList.remove('show');
+        $('#lockBtn').disabled = true;
+        $('#pickTitle').textContent = 'No square selected';
+        $('#pickDetail').textContent = 'Choose a band on the chart grid to price the ticket.';
+        ['pickBand','pickLane','pickMult','pickOdds','potential'].forEach(id => $('#' + id).textContent = '—');
         buildGrid();
-        addFeed('Round ' + String(round).padStart(3, '0'), 'new candle opened');
-        showToast('New candle live. Pick before lock.');
+        feed('Round ' + String(round).padStart(3, '0'), 'opened');
+        toast('New candle live. Pick your band.');
+      }
+
+      function hud() {
+        const move = (price / open - 1) * 100;
+        $('#lastPrice').textContent = money(price);
+        $('#moveLabel').textContent = pct(move);
+        $('#moveLabel').className = move >= 0 ? 'positive' : 'negative';
+        $('#roundOpen').textContent = money(open);
+        $('#lockedPicks').textContent = compact(8920 + Math.floor((ROUND_SECONDS - timeLeft) * 190));
+        $('#poolLabel').textContent = compact(pool) + ' pts';
+        $('#scoreLabel').textContent = compact(score) + ' pts';
+        $('#railPlayers').textContent = compact(players);
+        $('#railRound').textContent = String(round).padStart(3, '0');
+        $('#railState').textContent = timeLeft <= LOCK_SECONDS ? 'Locked' : locked ? 'Ticket in' : 'Open';
+        $('#lockState').textContent = timeLeft <= LOCK_SECONDS ? 'Closed' : locked ? 'Locked' : 'Open';
+        const secs = Math.max(0, Math.ceil(timeLeft));
+        $('#timer').textContent = '00:' + String(secs).padStart(2, '0');
+        $('#railProgress').style.transform = `scaleX(${Math.max(0, timeLeft / ROUND_SECONDS)})`;
+        grid.querySelectorAll('.cell').forEach(c => c.classList.toggle('locked', timeLeft <= LOCK_SECONDS || !!locked));
+        if (selected && !locked) updateTicket();
+        renderBands();
       }
 
       function loop(now) {
-        const dt = Math.min(.08, (now - lastFrame) / 1000);
-        lastFrame = now;
-        if (!settling) {
-          timeLeft -= dt;
-          updatePrice(dt);
-          feedTimer += dt;
-          if (feedTimer > rand(1.7, 3.6) && timeLeft > LOCK_SECONDS + 1) {
-            feedTimer = 0;
-            randomFeed();
-          }
-          if (timeLeft <= 0) settleRound();
-        }
-        updateHUD();
-        railTimer += dt;
-        if (railTimer > .75) {
-          railTimer = 0;
-          renderPriceRail();
-        }
-        drawChart();
-        drawMiniChart();
+        const dt = Math.min(.08, (now - last) / 1000);
+        last = now;
+        tick(dt);
+        hud();
+        draw();
         requestAnimationFrame(loop);
       }
 
       function boot() {
-        seedCandles();
+        seed();
         buildGrid();
-        renderLeaderboard();
-        ['Nova', 'Atlas', 'Vex', 'Mako'].forEach((name, i) => addFeed(name, `R${3 + i}/L${2 + (i % 3)} · launch band`));
-        $('#placeBtn').addEventListener('click', lockPick);
-        $('#stakeInput').addEventListener('input', () => { if (selected && !lockedPick) selectCell(selected.row, selected.col); });
-        $('#nextRoundBtn').addEventListener('click', resetRound);
-        $('#connectBtn').addEventListener('click', () => showToast('Demo wallet loaded with 10,000 launch points.'));
-        window.addEventListener('resize', () => { drawChart(); drawMiniChart(); });
+        renderTape();
+        renderLeaders();
+        ['Nova took R4/L2', 'Vex locked R3/L5', 'Atlas took R5/L1', 'Mako locked R2/L3'].forEach((t) => {
+          const [name, ...rest] = t.split(' ');
+          feed(name, rest.join(' '));
+        });
+        $('#stake').addEventListener('input', updateTicket);
+        $('#lockBtn').addEventListener('click', lockPick);
+        $('#nextRound').addEventListener('click', reset);
+        window.addEventListener('resize', draw);
         requestAnimationFrame(loop);
       }
 
