@@ -56,3 +56,20 @@ Mobile:
 - Chart first.
 - Ticket becomes sticky/bottom-oriented block.
 - Big touch cells and full-width lock button.
+
+## Live market feed
+
+The product now uses Hyperliquid's HIP-3 SPCX market as the live source of truth:
+
+- Contract: `xyz:SPCX`
+- REST initial load: `https://api.hyperliquid.xyz/info`
+  - `candleSnapshot` for 1m OHLC candles
+  - `metaAndAssetCtxs` with `dex: "xyz"` for mark/oracle/OI/24h volume
+  - `allMids` with `dex: "xyz"` for current mid
+- WebSocket: `wss://api.hyperliquid.xyz/ws`
+  - `trades` for live tape/last price
+  - `l2Book` for best bid/ask/spread
+  - `candle` for 1m candle boundaries
+  - `activeAssetCtx` for mark/oracle/OI/volume
+
+Important implementation detail: base Hyperliquid `meta` only shows native perps and `SPX`; HIP-3 markets require passing `dex: "xyz"` or using fully-qualified coin `xyz:SPCX`. The app must not query plain `SPCX`.

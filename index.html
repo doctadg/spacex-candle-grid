@@ -1091,8 +1091,8 @@
         <a class="tab" href="design-pass.md">Design notes</a>
       </nav>
       <div class="status-strip" aria-label="Market status">
-        <div class="status-pill"><span>Feed</span><strong><i class="live-dot"></i> Simulated</strong></div>
-        <div class="status-pill"><span>Offer</span><strong>$135.00</strong></div>
+        <div class="status-pill"><span>Feed</span><strong><i class="live-dot"></i> Hyperliquid</strong></div>
+        <div class="status-pill"><span>Contract</span><strong>xyz:SPCX</strong></div>
         <div class="status-pill"><span>Mode</span><strong>Points only</strong></div>
       </div>
     </header>
@@ -1102,7 +1102,7 @@
         <section class="rail-section">
           <div class="eyebrow"><span>Rooms</span><span>Live</span></div>
           <div class="room-list">
-            <button class="room active"><span class="room-icon">SP</span><span><b>SPCX Open</b><small>1m candle close</small></span><span class="count" id="railPlayers">18.4K</span></button>
+            <button class="room active"><span class="room-icon">SP</span><span><b>xyz:SPCX</b><small>Hyperliquid HIP-3</small></span><span class="count" id="railPlayers">Live</span></button>
             <button class="room"><span class="room-icon">ST</span><span><b>Starlink</b><small>Post-open sprint</small></span><span class="count">Soon</span></button>
             <button class="room"><span class="room-icon">IX</span><span><b>Index Chase</b><small>Nasdaq basket</small></span><span class="count">Soon</span></button>
           </div>
@@ -1123,14 +1123,14 @@
         <section class="hero-strip" aria-label="Product overview">
           <div class="hero-content">
             <div>
-              <div class="hero-kicker">Unofficial SPCX IPO launch game · free-to-play prototype</div>
+              <div class="hero-kicker">Live Hyperliquid SPCX feed · free-to-play prototype</div>
               <h1 class="hero-title">Predict the closing band of the next candle.</h1>
               <p class="hero-copy">A premium trading-arcade interface: price action stays central, the grid is readable, and every state tells players exactly what to do next.</p>
             </div>
             <div class="hero-metrics">
-              <div class="metric"><span>IPO price</span><strong>$135</strong></div>
-              <div class="metric"><span>Shares</span><strong>555.6M</strong></div>
-              <div class="metric"><span>Scoring</span><strong>Points</strong></div>
+              <div class="metric"><span>Mark</span><strong id="heroMark">—</strong></div>
+              <div class="metric"><span>Open interest</span><strong id="heroOi">—</strong></div>
+              <div class="metric"><span>24h volume</span><strong id="heroVol">—</strong></div>
             </div>
           </div>
         </section>
@@ -1139,7 +1139,7 @@
           <header class="chart-toolbar">
             <div class="instrument">
               <div class="ticker">SPCX</div>
-              <div><h2>Space Exploration Technologies · Class A</h2><p>Simulated first-trade environment · 1 minute close grid</p></div>
+              <div><h2>SPCX-USDC perpetual · Hyperliquid</h2><p>Live xyz:SPCX HIP-3 market · 1 minute close grid</p></div>
             </div>
             <div class="price-cluster">
               <div class="last-price"><strong id="lastPrice">$135.00</strong><span id="moveLabel">+0.00%</span></div>
@@ -1163,10 +1163,10 @@
           </div>
 
           <footer class="chart-footer">
-            <div class="stat"><span>Round open</span><strong id="roundOpen">$135.00</strong></div>
-            <div class="stat"><span>Close range</span><strong id="rangeLabel">$128.00–$142.00</strong></div>
-            <div class="stat"><span>Locked picks</span><strong id="lockedPicks">8,920</strong></div>
-            <div class="stat"><span>Round pool</span><strong id="poolLabel">742K pts</strong></div>
+            <div class="stat"><span>Round open</span><strong id="roundOpen">—</strong></div>
+            <div class="stat"><span>Mark / oracle</span><strong id="rangeLabel">—</strong></div>
+            <div class="stat"><span>Open interest</span><strong id="lockedPicks">—</strong></div>
+            <div class="stat"><span>24h volume</span><strong id="poolLabel">—</strong></div>
             <div class="stat"><span>Your score</span><strong id="scoreLabel">12.4K pts</strong></div>
           </footer>
         </section>
@@ -1214,432 +1214,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script>
-    (() => {
-      const ROWS = 8;
-      const COLS = 5;
-      const ROUND_SECONDS = 35;
-      const LOCK_SECONDS = 5;
-      const BASE = 135;
-      const $ = (s) => document.querySelector(s);
-      const grid = $('#grid');
-      const chart = $('#chart');
-      const ctx = chart.getContext('2d');
-      const playerNames = ['Nova', 'Vex', 'Atlas', 'Mako', 'Ion', 'Rook', 'Luna', 'Drift', 'Astra', 'Vector'];
-      const chipColors = ['#7c5cff', '#9f8cff', '#57a2ff', '#1fd99d', '#f0b45f'];
-
-      let candles = [];
-      let trace = [];
-      let price = BASE;
-      let open = BASE;
-      let round = 42;
-      let timeLeft = ROUND_SECONDS;
-      let selected = null;
-      let locked = null;
-      let score = 12400;
-      let streak = 2;
-      let pool = 742000;
-      let players = 18420;
-      let feedClock = 0;
-      let tape = [];
-      let settling = false;
-      let last = performance.now();
-
-      const money = (n) => '$' + n.toFixed(2);
-      const compact = (n) => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K' : String(Math.round(n));
-      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-      const rand = (a, b) => a + Math.random() * (b - a);
-      const pct = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-
-      function toast(text) {
-        const t = $('#toast');
-        t.textContent = text;
-        t.classList.add('show');
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => t.classList.remove('show'), 2400);
-      }
-
-      function seed() {
-        candles = [];
-        let p = BASE - 1.8;
-        for (let i = 0; i < 68; i++) {
-          const cOpen = p;
-          const impulse = Math.sin(i / 5) * .28 + rand(-.5, .58);
-          const cClose = clamp(cOpen + impulse, 126, 147);
-          candles.push({ open: cOpen, close: cClose, high: Math.max(cOpen, cClose) + rand(.08, .85), low: Math.min(cOpen, cClose) - rand(.08, .75) });
-          p = cClose;
-        }
-        price = candles.at(-1).close;
-        open = price;
-        trace = Array.from({ length: 38 }, (_, i) => price + Math.sin(i / 4) * .16 + rand(-.06, .06));
-        tape = [
-          { round: 41, band: 'R3', close: 136.18, score: '+1.2K' },
-          { round: 40, band: 'R5', close: 133.72, score: '-500' },
-          { round: 39, band: 'R4', close: 134.91, score: '+820' },
-          { round: 38, band: 'R2', close: 138.40, score: '+2.4K' },
-          { round: 37, band: 'R6', close: 132.02, score: '+610' }
-        ];
-      }
-
-      function range() {
-        const all = candles.flatMap(c => [c.high, c.low]).concat(trace, BASE);
-        const hi = Math.max(...all);
-        const lo = Math.min(...all);
-        const pad = Math.max(2.4, (hi - lo) * .18);
-        return { min: lo - pad, max: hi + pad };
-      }
-
-      function bands() {
-        const r = range();
-        const step = (r.max - r.min) / ROWS;
-        return Array.from({ length: ROWS }, (_, row) => {
-          const top = r.max - row * step;
-          const bottom = top - step;
-          return { top, bottom, label: `${money(bottom)}–${money(top)}` };
-        });
-      }
-
-      function bandFor(p) {
-        const b = bands();
-        const idx = b.findIndex(x => p <= x.top && p >= x.bottom);
-        return clamp(idx === -1 ? ROWS - 1 : idx, 0, ROWS - 1);
-      }
-
-      function mult(row, col) {
-        const distance = Math.abs(row - (ROWS - 1) / 2);
-        return +(1.16 + col * .28 + distance * .15).toFixed(2);
-      }
-
-      function odds(row) {
-        const distance = Math.abs(row - (ROWS - 1) / 2);
-        return Math.max(9, Math.round(28 - distance * 4 + rand(-1, 1))) + '%';
-      }
-
-      function buildGrid() {
-        grid.innerHTML = '';
-        for (let row = 0; row < ROWS; row++) {
-          for (let col = 0; col < COLS; col++) {
-            const btn = document.createElement('button');
-            btn.className = 'cell';
-            btn.type = 'button';
-            btn.dataset.row = row;
-            btn.dataset.col = col;
-            btn.style.setProperty('--heat', (0.018 + (ROWS - row) * .003 + col * .005).toFixed(3));
-            btn.textContent = col === COLS - 1 ? 'CLOSE' : `${mult(row, col).toFixed(2)}x`;
-            btn.setAttribute('aria-label', `Select row ${row + 1}, lane ${col + 1}`);
-            btn.addEventListener('click', () => choose(row, col));
-            grid.appendChild(btn);
-          }
-        }
-        addOccupants();
-        renderBands();
-      }
-
-      function renderBands() {
-        const rail = $('#priceRail');
-        rail.innerHTML = bands().map(b => `<div class="band-label">${b.label}</div>`).join('');
-        const b = bands();
-        $('#rangeLabel').textContent = `${money(b.at(-1).bottom)}–${money(b[0].top)}`;
-      }
-
-      function addOccupants() {
-        const cells = Array.from(grid.children);
-        cells.forEach(c => c.querySelectorAll('.occupant').forEach(o => o.remove()));
-        for (let i = 0; i < 26; i++) {
-          const row = clamp(Math.floor(rand(0, ROWS)), 0, ROWS - 1);
-          const col = clamp(Math.floor(rand(0, COLS)), 0, COLS - 1);
-          const dot = document.createElement('span');
-          dot.className = 'occupant';
-          dot.style.setProperty('--x', rand(7, 22).toFixed(0) + 'px');
-          dot.style.setProperty('--y', rand(7, 22).toFixed(0) + 'px');
-          dot.style.setProperty('--c', chipColors[Math.floor(rand(0, chipColors.length))]);
-          cells[row * COLS + col]?.appendChild(dot);
-        }
-      }
-
-      function choose(row, col) {
-        if (settling || locked || timeLeft <= LOCK_SECONDS) {
-          toast('Grid is locked for this candle. Next round opens after settlement.');
-          return;
-        }
-        selected = { row, col };
-        Array.from(grid.children).forEach(c => c.classList.remove('selected'));
-        grid.children[row * COLS + col].classList.add('selected');
-        updateTicket();
-        $('#lockBtn').disabled = false;
-      }
-
-      function updateTicket() {
-        if (!selected) return;
-        const b = bands()[selected.row];
-        const m = mult(selected.row, selected.col);
-        const stake = Number($('#stake').value || 0);
-        $('#pickTitle').textContent = `Row ${selected.row + 1} · Lane ${selected.col + 1}`;
-        $('#pickDetail').textContent = `Close must land between ${b.label.replace('–', ' and ')}.`;
-        $('#pickBand').textContent = b.label;
-        $('#pickLane').textContent = selected.col === COLS - 1 ? 'Close lane' : `Lane ${selected.col + 1}`;
-        $('#pickMult').textContent = m.toFixed(2) + 'x';
-        $('#pickOdds').textContent = odds(selected.row);
-        $('#potential').textContent = compact(stake * m * (1 + streak * .05)) + ' pts';
-      }
-
-      function lockPick() {
-        if (!selected) return toast('Select a square first.');
-        if (timeLeft <= LOCK_SECONDS) return toast('Lock window already closed.');
-        locked = { ...selected, stake: Number($('#stake').value || 0) };
-        $('#lockBtn').disabled = true;
-        grid.querySelectorAll('.cell').forEach(c => c.classList.add('locked'));
-        feed('You', `locked Row ${locked.row + 1} / Lane ${locked.col + 1}`);
-        toast('Ticket locked. Watch the settlement line.');
-      }
-
-      function feed(who, action) {
-        const item = document.createElement('div');
-        item.className = 'feed-item';
-        item.innerHTML = `<small>${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small><b>${who}</b> <em>${action}</em>`;
-        $('#feed').prepend(item);
-        while ($('#feed').children.length > 8) $('#feed').lastElementChild.remove();
-      }
-
-      function randomFeed() {
-        const n = playerNames[Math.floor(rand(0, playerNames.length))];
-        const row = Math.floor(rand(0, ROWS));
-        const col = Math.floor(rand(0, COLS));
-        feed(n, `took R${row + 1}/L${col + 1}`);
-      }
-
-      function renderLeaders() {
-        const rows = [
-          ['VX', 'Vex', 'Opening sniper', 38920],
-          ['DK', 'DriftKing', '5-round ROI', 35110],
-          ['IO', 'Ion', 'Band discipline', 28840],
-          ['YOU', 'You', `${streak}x streak`, score],
-          ['NV', 'Nova', 'Close hunter', 10740]
-        ].sort((a, b) => b[3] - a[3]);
-        $('#leaders').innerHTML = rows.map((r, i) => `<div class="leader"><div class="avatar">${r[0]}</div><div><b>${i + 1}. ${r[1]}</b><small>${r[2]}</small></div><strong>${compact(r[3])}</strong></div>`).join('');
-      }
-
-      function renderTape() {
-        $('#roundTape').innerHTML = tape.slice(0, 5).map(t => `<div class="tape-item"><small>Round ${String(t.round).padStart(3, '0')} · ${t.band}</small><strong>${money(t.close)}</strong><span class="${t.score.startsWith('+') ? 'positive' : 'negative'}">${t.score} pts</span></div>`).join('');
-      }
-
-      function resize() {
-        const rect = chart.getBoundingClientRect();
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-        const w = Math.max(1, Math.floor(rect.width * dpr));
-        const h = Math.max(1, Math.floor(rect.height * dpr));
-        if (chart.width !== w || chart.height !== h) {
-          chart.width = w;
-          chart.height = h;
-        }
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        return { w: rect.width, h: rect.height };
-      }
-
-      function draw() {
-        const { w, h } = resize();
-        const pad = { l: 44, r: 30, t: 38, b: 42 };
-        const plotW = w - pad.l - pad.r;
-        const plotH = h - pad.t - pad.b;
-        const r = range();
-        const y = (p) => pad.t + (r.max - p) / (r.max - r.min) * plotH;
-        const x = (i, total = candles.length + 12) => pad.l + i / total * plotW;
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = '#05070a';
-        ctx.fillRect(0, 0, w, h);
-
-        const gridX = pad.l + plotW * .56;
-        ctx.fillStyle = 'rgba(124,92,255,.035)';
-        ctx.fillRect(gridX, pad.t, w - gridX - pad.r, plotH);
-
-        for (let i = 0; i <= 8; i++) {
-          const yy = pad.t + i / 8 * plotH;
-          ctx.strokeStyle = i === 4 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.052)';
-          ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke();
-        }
-        for (let i = 0; i <= 10; i++) {
-          const xx = pad.l + i / 10 * plotW;
-          ctx.strokeStyle = 'rgba(255,255,255,.04)';
-          ctx.beginPath(); ctx.moveTo(xx, pad.t); ctx.lineTo(xx, h - pad.b); ctx.stroke();
-        }
-
-        candles.forEach((c, i) => {
-          const xx = x(i);
-          const width = Math.max(3, plotW / 96);
-          const up = c.close >= c.open;
-          ctx.strokeStyle = up ? 'rgba(31,217,157,.78)' : 'rgba(255,90,116,.72)';
-          ctx.fillStyle = up ? 'rgba(31,217,157,.62)' : 'rgba(255,90,116,.58)';
-          ctx.beginPath(); ctx.moveTo(xx, y(c.high)); ctx.lineTo(xx, y(c.low)); ctx.stroke();
-          const top = Math.min(y(c.open), y(c.close));
-          const bottom = Math.max(y(c.open), y(c.close));
-          ctx.fillRect(xx - width / 2, top, width, Math.max(2, bottom - top));
-        });
-
-        const startX = x(candles.length + 1);
-        const endX = w - pad.r - 12;
-        const hi = Math.max(...trace, open);
-        const lo = Math.min(...trace, open);
-        const up = price >= open;
-        const candleX = startX + 24;
-        ctx.strokeStyle = up ? '#1fd99d' : '#ff5a74';
-        ctx.fillStyle = up ? '#1fd99d' : '#ff5a74';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(candleX, y(hi)); ctx.lineTo(candleX, y(lo)); ctx.stroke();
-        ctx.fillRect(candleX - 9, Math.min(y(open), y(price)), 18, Math.max(3, Math.abs(y(price) - y(open))));
-
-        ctx.strokeStyle = 'rgba(255,255,255,.42)';
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        trace.forEach((p, i) => {
-          const xx = startX + i / Math.max(1, trace.length - 1) * (endX - startX);
-          const yy = y(p);
-          if (i === 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
-        });
-        ctx.stroke();
-
-        ctx.setLineDash([5, 6]);
-        ctx.strokeStyle = 'rgba(240,180,95,.56)';
-        ctx.beginPath(); ctx.moveTo(pad.l, y(BASE)); ctx.lineTo(w - pad.r, y(BASE)); ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = 'rgba(201,206,218,.66)';
-        ctx.font = '10px JetBrains Mono, monospace';
-        ctx.fillText('OFFER 135.00', pad.l, y(BASE) - 8);
-        ctx.textAlign = 'right';
-        ctx.fillStyle = 'rgba(244,246,251,.9)';
-        ctx.fillText(money(price), w - pad.r, y(price) - 9);
-        ctx.textAlign = 'left';
-
-        const dotX = endX, dotY = y(price);
-        ctx.fillStyle = up ? '#1fd99d' : '#ff5a74';
-        ctx.beginPath(); ctx.arc(dotX, dotY, 4, 0, Math.PI * 2); ctx.fill();
-      }
-
-      function tick(dt) {
-        if (settling) return;
-        timeLeft -= dt;
-        const shock = rand(-.22, .24) + Math.sin(Date.now() / 1200) * .04;
-        price = clamp(price + shock + (BASE - price) * .01, 126, 148);
-        trace.push(price);
-        if (trace.length > 62) trace.shift();
-        if (Math.random() < .07) {
-          const prev = candles.at(-1).close;
-          const c = price + rand(-.1, .1);
-          candles.push({ open: prev, close: c, high: Math.max(prev, c) + rand(.04, .45), low: Math.min(prev, c) - rand(.04, .45) });
-          if (candles.length > 68) candles.shift();
-        }
-        feedClock += dt;
-        if (feedClock > 2.2 && timeLeft > LOCK_SECONDS + 1) {
-          feedClock = 0;
-          randomFeed();
-        }
-        if (timeLeft <= 0) settle();
-      }
-
-      function settle() {
-        settling = true;
-        timeLeft = 0;
-        const row = bandFor(price);
-        const lane = COLS - 1;
-        const winCell = grid.children[row * COLS + lane];
-        grid.querySelectorAll('.cell').forEach(c => c.classList.remove('winner'));
-        winCell?.classList.add('winner');
-        const arenaRect = $('.arena').getBoundingClientRect();
-        const b = bands()[row];
-        const mid = (b.top + b.bottom) / 2;
-        const r = range();
-        const yPct = (r.max - mid) / (r.max - r.min) * 100;
-        $('#settlementLine').style.top = yPct + '%';
-        $('#settlementLine').classList.add('show');
-
-        let title = 'Missed band';
-        let text = `Close printed ${money(price)} in Row ${row + 1}.`;
-        if (locked && locked.row === row) {
-          const gain = Math.round(locked.stake * mult(locked.row, locked.col) * (1 + streak * .05));
-          score += gain;
-          streak += 1;
-          title = '+' + compact(gain);
-          text = `Close printed ${money(price)} in Row ${row + 1}. Your ticket paid with a ${streak}x streak.`;
-        } else {
-          if (locked) score = Math.max(0, score - locked.stake);
-          streak = 0;
-        }
-        tape.unshift({ round, band: 'R' + (row + 1), close: price, score: title.startsWith('+') ? title : (locked ? '-' + compact(locked.stake || 0) : '0') });
-        renderTape();
-        renderLeaders();
-        $('#settleTitle').textContent = title;
-        $('#settleText').textContent = text;
-        $('#settlement').classList.add('show');
-      }
-
-      function reset() {
-        settling = false;
-        round += 1;
-        timeLeft = ROUND_SECONDS;
-        selected = null;
-        locked = null;
-        open = price;
-        pool += Math.floor(rand(16000, 55000));
-        players += Math.floor(rand(180, 650));
-        $('#settlement').classList.remove('show');
-        $('#settlementLine').classList.remove('show');
-        $('#lockBtn').disabled = true;
-        $('#pickTitle').textContent = 'No square selected';
-        $('#pickDetail').textContent = 'Choose a band on the chart grid to price the ticket.';
-        ['pickBand','pickLane','pickMult','pickOdds','potential'].forEach(id => $('#' + id).textContent = '—');
-        buildGrid();
-        feed('Round ' + String(round).padStart(3, '0'), 'opened');
-        toast('New candle live. Pick your band.');
-      }
-
-      function hud() {
-        const move = (price / open - 1) * 100;
-        $('#lastPrice').textContent = money(price);
-        $('#moveLabel').textContent = pct(move);
-        $('#moveLabel').className = move >= 0 ? 'positive' : 'negative';
-        $('#roundOpen').textContent = money(open);
-        $('#lockedPicks').textContent = compact(8920 + Math.floor((ROUND_SECONDS - timeLeft) * 190));
-        $('#poolLabel').textContent = compact(pool) + ' pts';
-        $('#scoreLabel').textContent = compact(score) + ' pts';
-        $('#railPlayers').textContent = compact(players);
-        $('#railRound').textContent = String(round).padStart(3, '0');
-        $('#railState').textContent = timeLeft <= LOCK_SECONDS ? 'Locked' : locked ? 'Ticket in' : 'Open';
-        $('#lockState').textContent = timeLeft <= LOCK_SECONDS ? 'Closed' : locked ? 'Locked' : 'Open';
-        const secs = Math.max(0, Math.ceil(timeLeft));
-        $('#timer').textContent = '00:' + String(secs).padStart(2, '0');
-        $('#railProgress').style.transform = `scaleX(${Math.max(0, timeLeft / ROUND_SECONDS)})`;
-        grid.querySelectorAll('.cell').forEach(c => c.classList.toggle('locked', timeLeft <= LOCK_SECONDS || !!locked));
-        if (selected && !locked) updateTicket();
-        renderBands();
-      }
-
-      function loop(now) {
-        const dt = Math.min(.08, (now - last) / 1000);
-        last = now;
-        tick(dt);
-        hud();
-        draw();
-        requestAnimationFrame(loop);
-      }
-
-      function boot() {
-        seed();
-        buildGrid();
-        renderTape();
-        renderLeaders();
-        ['Nova took R4/L2', 'Vex locked R3/L5', 'Atlas took R5/L1', 'Mako locked R2/L3'].forEach((t) => {
-          const [name, ...rest] = t.split(' ');
-          feed(name, rest.join(' '));
-        });
-        $('#stake').addEventListener('input', updateTicket);
-        $('#lockBtn').addEventListener('click', lockPick);
-        $('#nextRound').addEventListener('click', reset);
-        window.addEventListener('resize', draw);
-        requestAnimationFrame(loop);
-      }
-
-      boot();
-    })();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
